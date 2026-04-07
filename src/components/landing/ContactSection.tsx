@@ -7,12 +7,18 @@ import { Snackbar } from "@/components/ui/Snackbar";
 
 /** Contact details shown alongside the form. */
 export interface ContactInfo {
-  /** E.164 phone number (e.g. `"+15551234567"`). Also used as `href="tel:..."`. */
+  /** Company display name shown above the contact details. */
+  company: string;
+  /** Primary phone number. Also used as `href="tel:..."`. */
   phone: string;
+  /** Optional secondary phone number. */
+  phone2?: string;
   /** Business email address. */
-  email: string;
+  email?: string;
   /** Full street address. */
   address: string;
+  /** Tax identification number (RIF) for Venezuelan businesses. */
+  rif?: string;
 }
 
 /** Props accepted by ContactSection. Matches the Phase 4 DynamoDB content shape. */
@@ -58,7 +64,6 @@ export function ContactSection({
     setSnackbarVisible(true);
   }
 
-
   return (
     <section
       id="contact"
@@ -75,14 +80,19 @@ export function ContactSection({
             {heading}
           </h2>
           {subtitle && (
-            <p className="mb-8 text-base leading-relaxed text-text-secondary">
+            <p className="mb-6 text-base leading-relaxed text-text-secondary">
               {subtitle}
             </p>
           )}
 
+          {/* Company name */}
+          <p className="mb-6 font-semibold text-text-primary">
+            {contactInfo.company}
+          </p>
+
           <ul className="space-y-4 text-text-secondary">
+            {/* Primary phone */}
             <li className="flex items-start gap-3">
-              {/* Phone icon */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
@@ -98,42 +108,55 @@ export function ContactSection({
               >
                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12 19.79 19.79 0 0 1 1.05 3.4 2 2 0 0 1 3 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16l.92.92z" />
               </svg>
-              <a
-                href={`tel:${contactInfo.phone}`}
-                className="hover:text-accent transition-colors"
-              >
-                {contactInfo.phone}
-              </a>
+              <div className="flex flex-col gap-1">
+                <a
+                  href={`tel:${contactInfo.phone.replace(/\D/g, "")}`}
+                  className="hover:text-accent transition-colors"
+                >
+                  {contactInfo.phone}
+                </a>
+                {/* Secondary phone — only rendered when provided */}
+                {contactInfo.phone2 && (
+                  <a
+                    href={`tel:${contactInfo.phone2.replace(/\D/g, "")}`}
+                    className="hover:text-accent transition-colors"
+                  >
+                    {contactInfo.phone2}
+                  </a>
+                )}
+              </div>
             </li>
 
-            <li className="flex items-start gap-3">
-              {/* Email icon */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="mt-0.5 shrink-0 text-accent"
-                aria-hidden="true"
-              >
-                <rect width="20" height="16" x="2" y="4" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-              </svg>
-              <a
-                href={`mailto:${contactInfo.email}`}
-                className="hover:text-accent transition-colors"
-              >
-                {contactInfo.email}
-              </a>
-            </li>
+            {/* Email — only rendered when provided */}
+            {contactInfo.email && (
+              <li className="flex items-start gap-3">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="mt-0.5 shrink-0 text-accent"
+                  aria-hidden="true"
+                >
+                  <rect width="20" height="16" x="2" y="4" rx="2" />
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                </svg>
+                <a
+                  href={`mailto:${contactInfo.email}`}
+                  className="hover:text-accent transition-colors"
+                >
+                  {contactInfo.email}
+                </a>
+              </li>
+            )}
 
+            {/* Address */}
             <li className="flex items-start gap-3">
-              {/* Map pin icon */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
@@ -152,6 +175,33 @@ export function ContactSection({
               </svg>
               <span>{contactInfo.address}</span>
             </li>
+
+            {/* RIF — only rendered when provided */}
+            {contactInfo.rif && (
+              <li className="flex items-start gap-3">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="mt-0.5 shrink-0 text-accent"
+                  aria-hidden="true"
+                >
+                  <rect width="18" height="14" x="3" y="5" rx="2" />
+                  <path d="M3 10h18" />
+                  <path d="M7 15h.01M11 15h2" />
+                </svg>
+                <span>
+                  <span className="font-medium text-text-primary">RIF:</span>{" "}
+                  {contactInfo.rif}
+                </span>
+              </li>
+            )}
           </ul>
         </div>
 

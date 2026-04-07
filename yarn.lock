@@ -953,6 +953,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:^22.10.3":
+  version: 22.19.17
+  resolution: "@types/node@npm:22.19.17"
+  dependencies:
+    undici-types: ~6.21.0
+  checksum: c817456948b0453b15a15d7865faea0b0de9bc93e9725788a62978f05994702b673029300ce9667d52ce439acfb43ecd8122acb8eba9145c26b1c4d22e67a234
+  languageName: node
+  linkType: hard
+
 "@types/react-dom@npm:^19":
   version: 19.2.3
   resolution: "@types/react-dom@npm:19.2.3"
@@ -3192,7 +3201,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimist@npm:^1.2.0, minimist@npm:^1.2.6":
+"minimist@npm:^1.2.0, minimist@npm:^1.2.6, minimist@npm:^1.2.8":
   version: 1.2.8
   resolution: "minimist@npm:1.2.8"
   checksum: 75a6d645fb122dad29c06a7597bddea977258957ed88d7a6df59b5cd3fe4a527e253e9bbf2e783e4b73657f9098b96a5fe96ab8a113655d4109108577ecf85b0
@@ -3211,8 +3220,10 @@ __metadata:
     eslint: ^9
     eslint-config-next: 16.2.2
     next: 16.2.2
+    png-to-ico: ^3.0.1
     react: 19.2.4
     react-dom: 19.2.4
+    sharp: ^0.34.5
     tailwindcss: ^4
     typescript: ^5
   languageName: unknown
@@ -3502,6 +3513,26 @@ __metadata:
   version: 4.0.4
   resolution: "picomatch@npm:4.0.4"
   checksum: 76b387b5157951422fa6049a96bdd1695e39dd126cd99df34d343638dc5cdb8bcdc83fff288c23eddcf7c26657c35e3173d4d5f488c4f28b889b314472e0a662
+  languageName: node
+  linkType: hard
+
+"png-to-ico@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "png-to-ico@npm:3.0.1"
+  dependencies:
+    "@types/node": ^22.10.3
+    minimist: ^1.2.8
+    pngjs: ^7.0.0
+  bin:
+    png-to-ico: bin/cli.js
+  checksum: bbe1393d3d1331691d49d9f0d363a639913327b6fbca89a7283f48af6661d86590be5e0c0782c0176b2b77959902b7b9d7ef96ebffedcba5f9dbb9c00ceb4eef
+  languageName: node
+  linkType: hard
+
+"pngjs@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "pngjs@npm:7.0.0"
+  checksum: b19a018930d27de26229c1b3ff250b3a25d09caa22cbb0b0459987d91eb0a560a18ab5d67da45a38ed7514140f26d1db58de83c31159ec101f2bb270a3c707f1
   languageName: node
   linkType: hard
 

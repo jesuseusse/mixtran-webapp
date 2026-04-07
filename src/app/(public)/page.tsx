@@ -12,79 +12,82 @@ import { ContactSection } from "@/components/landing/ContactSection";
 export const revalidate = 3600;
 
 /**
- * Generates full page metadata including Open Graph, Twitter cards, and canonical URL.
- * In Phase 4 some fields will be pulled from DynamoDB via landingService.
+ * Generates full page metadata including Open Graph, Twitter cards, canonical URL,
+ * and SEO keywords for the MIXTRAN landing page.
  */
 export function generateMetadata(): Metadata {
   return buildMetadata({
-    title: "Mixtran Paint — Asesoría de Color Premium",
+    title: "MIXTRAN | Revestimientos Plásticos, Grafiados y Texturizados",
     description:
-      "Transforma tu espacio con consultoría de color experta y pinturas de alta calidad. Agenda tu cita de asesoría personalizada hoy.",
+      "MIXTRAN fabrica revestimientos acrílicos con partículas de cuarzo para interiores y exteriores. Resistentes al clima, versátiles en cualquier superficie. Cagua, Edo. Aragua.",
     path: "/",
-    locale: "es_MX",
+    locale: "es_VE",
+    ogImage: "/images/og-default.png",
+    keywords: [
+      "revestimientos plásticos",
+      "pinturas texturizadas",
+      "fijador",
+      "revestimientos acrílicos",
+      "Cagua",
+      "Aragua",
+      "Venezuela",
+    ],
   });
 }
 
 // ─────────────────────────────────────────────────────────────
 // Static content (Phase 1) — all user-visible copy in Spanish.
-// Replace with DynamoDB calls in Phase 4 — zero component refactor needed.
+// Replace with DynamoDB service calls in Phase 4 — zero component
+// refactor needed; only the data source changes.
 // ─────────────────────────────────────────────────────────────
 
 const HERO = {
-  headline: "Color que transforma espacios",
-  subtitle:
-    "Asesoría de color experta y pinturas premium para hogares y negocios. Hacemos realidad tu visión.",
-  ctaText: "Agendar asesoría de color",
+  headline: "MIXTRAN — Revestimientos que duran",
+  subtitle: "Plásticos · Grafiados · Texturizados · Pinturas para interiores y exteriores",
+  ctaText: "Agenda tu asesoría",
   ctaHref: "/agendar",
   backgroundImageUrl: "/images/hero-bg.png",
 };
 
 const ABOUT = {
-  heading: "Hecho con pasión, aplicado con precisión",
+  heading: "¿Qué es MIXTRAN?",
   body:
-    "Somos un equipo de consultores de color certificados y pintores maestros dedicados a transformar espacios a través del arte del color.\n\nCon más de 15 años de experiencia y cientos de proyectos concluidos, combinamos materiales premium con una técnica meticulosa para entregar resultados que superan expectativas.",
+    "MIXTRAN MLQ es un revestimiento acrílico con partículas de cuarzo diseñado para proteger y embellecer cualquier superficie. Su fórmula avanzada lo hace resistente a todos los climas, con desempeño comprobado en zonas costeras de alta salinidad y en regiones montañosas.\n\nSe adhiere a una amplia variedad de sustratos: paredes en buen estado, yeso seco, ladrillos de cemento, madera, hierro, láminas metálicas, vidrio, aluminio, paneles de cualquier tipo y cartón piedra. Ideal tanto para interiores como para exteriores.\n\nAntes de aplicar MLQ, se recomienda usar nuestro Fijador para sellar la superficie, mejorar la adherencia y garantizar un acabado duradero y uniforme.",
   photoUrl: "/images/about-studio.png",
-  photoAlt: "Nuestro estudio y espacio de consultoría de color",
+  photoAlt: "Aplicación de revestimiento MIXTRAN MLQ en pared exterior",
 };
 
 const PRODUCTS = {
-  heading: "Nuestras líneas de pintura",
-  subtitle: "Formulaciones premium para cada superficie y estilo.",
+  heading: "Nuestros productos",
+  subtitle: "Soluciones de revestimiento para cada superficie y clima.",
   products: [
     {
-      id: "interior",
-      name: "Interior Premium",
+      id: "fijador",
+      name: "Fijador",
       description:
-        "Acabados mate y cáscara de huevo de textura aterciopelada formulados para espacios habitables. Sin VOC, lavables y duraderos.",
+        "Sellador de superficies que garantiza la máxima adherencia del MLQ. Se aplica antes del revestimiento con rodillo de peluche o esponja. Penetra en el sustrato para unificar la absorción y preparar la base.",
       imageUrl: "/images/product-interior.png",
     },
     {
-      id: "exterior",
-      name: "Escudo Climático Exterior",
+      id: "mlq",
+      name: "MLQ",
       description:
-        "Pintura exterior de alta opacidad y resistencia UV que soporta condiciones extremas sin perder su color vibrante.",
+        "Revestimiento acrílico con partículas de cuarzo. Resiste cualquier clima: zonas costeras con alta salinidad y áreas montañosas. Uso interior y exterior. Compatible con paredes, yeso, cemento, madera, hierro, vidrio, aluminio y paneles de todo tipo.",
       imageUrl: "/images/product-exterior.png",
-    },
-    {
-      id: "specialty",
-      name: "Especialidades y Acentos",
-      description:
-        "Acabados metálicos, tiza y texturizados para muros de acento, muebles e instalaciones artísticas.",
-      imageUrl: "/images/product-specialty.png",
     },
   ],
 };
 
 const GALLERY = {
   heading: "Proyectos recientes",
-  subtitle: "Una selección de espacios transformados por nuestro equipo.",
+  subtitle: "Una selección de espacios transformados con MIXTRAN.",
   items: [] as { id: string; url: string; alt: string }[],
-  /* Populate with real S3 CloudFront URLs once media is uploaded in Phase 4 */
+  /* Gallery images will be uploaded to S3 and served via CloudFront in Phase 4. */
 };
 
 const REVIEWS = {
   heading: "Lo que dicen nuestros clientes",
-  subtitle: "Opiniones reales de hogares y negocios con los que hemos trabajado.",
+  subtitle: "Opiniones reales de clientes que confiaron en MIXTRAN.",
   reviews: [] as {
     reviewId: string;
     authorName: string;
@@ -92,38 +95,40 @@ const REVIEWS = {
     body: string;
     createdAt: string;
   }[],
-  /* Populated from DynamoDB in Phase 4 via reviewService.getApproved() */
+  /* Populated from DynamoDB in Phase 4 via reviewService.getApproved(). */
 };
 
 const BOOKING_CTA = {
-  heading: "¿Listo para transformar tu espacio?",
-  body:
-    "Agenda una consultoría de color gratuita de 30 minutos con uno de nuestros expertos. Te guiaremos en la selección de paleta, acabado y técnica que mejor se adapte a tu espacio y estilo de vida.",
-  ctaText: "Agendar consultoría gratuita",
+  heading: "¿Necesitas asesoría profesional?",
+  body: "Agenda una cita con nuestro experto en revestimientos y obtén la solución ideal para tu proyecto.",
+  ctaText: "Agendar cita gratis",
   ctaHref: "/agendar",
 };
 
 const CONTACT = {
   heading: "Contáctanos",
-  subtitle:
-    "¿Tienes preguntas sobre nuestros servicios? Nos encantaría escucharte.",
+  subtitle: "Estamos disponibles para atender tu consulta y orientarte en tu proyecto.",
   contactInfo: {
-    phone: "+1 (555) 000-0000",
-    email: "hola@mixtranpaint.com",
-    address: "123 Color Ave, Suite 4, Tu Ciudad, ST 00000",
+    company: "MIXTRAN — Emprendimiento Carlos Álvarez 71",
+    phone: "0412-4091061",
+    phone2: "0412-3859612",
+    email: "mixtranrevestimientoplastico@gmail.com",
+    address: "CALLE 10-08 CASA NRO 14-A URB CIUDAD JARDIN CAGUA ARAGUA ZONA POSTAL 2122",
+    rif: "508062914-MDF",
   },
 };
 
-/** Structured data injected into the page for search engine rich results. */
+/** Structured data for Google Knowledge Panel and local search results. */
 const LOCAL_BUSINESS_JSON_LD = buildLocalBusinessJsonLd({
-  name: "Mixtran Paint",
+  name: "MIXTRAN",
   description:
-    "Asesoría de color experta y servicios de pintura profesional para espacios residenciales y comerciales.",
-  streetAddress: "123 Color Ave, Suite 4",
-  city: "Tu Ciudad",
-  country: "MX",
-  phone: "+15550000000",
-  email: "hola@mixtranpaint.com",
+    "MIXTRAN fabrica revestimientos acrílicos con partículas de cuarzo para interiores y exteriores. Resistentes al clima, versátiles en cualquier superficie.",
+  streetAddress: "CALLE 10-08 CASA NRO 14-A URB CIUDAD JARDIN CAGUA ARAGUA ZONA POSTAL 2122",
+  city: "Cagua",
+  region: "Edo. Aragua",
+  country: "VE",
+  phone: "+584124091061",
+  email: "mixtranrevestimientoplastico@gmail.com",
 });
 
 const PRODUCT_LIST_JSON_LD = buildProductListJsonLd(
@@ -136,10 +141,9 @@ const PRODUCT_LIST_JSON_LD = buildProductListJsonLd(
 /**
  * Public landing page — rendered as static with ISR (revalidate = 3600).
  *
- * Composes all landing section components. Content is hardcoded in Phase 1
- * and will be driven from DynamoDB in Phase 4 without touching this file's
- * component structure — only the static objects above are replaced with
- * service calls.
+ * Composes all landing section components with real MIXTRAN brand content.
+ * In Phase 4 the static objects above are replaced with DynamoDB service
+ * calls — no changes to the component tree are required.
  */
 export default function LandingPage() {
   return (

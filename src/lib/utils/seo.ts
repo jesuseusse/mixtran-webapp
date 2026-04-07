@@ -18,8 +18,10 @@ export interface MetadataOptions {
   path?: string;
   /** Absolute URL to the OG share image. */
   ogImage?: string;
-  /** Open Graph locale (e.g. `"es_MX"`, `"en_US"`). @default "es_MX" */
+  /** Open Graph locale (e.g. `"es_VE"`, `"es_MX"`). @default "es_MX" */
   locale?: string;
+  /** SEO keywords for the `<meta name="keywords">` tag. */
+  keywords?: string[];
 }
 
 /**
@@ -43,6 +45,7 @@ export function buildMetadata({
   path = "/",
   ogImage,
   locale = "es_MX",
+  keywords,
 }: MetadataOptions): Metadata {
   const url = `${BASE_URL}${path}`;
   const image = ogImage ?? `${BASE_URL}/og-default.jpg`;
@@ -50,6 +53,7 @@ export function buildMetadata({
   return {
     title,
     description,
+    ...(keywords?.length ? { keywords } : {}),
     metadataBase: new URL(BASE_URL),
     alternates: {
       canonical: url,
@@ -85,7 +89,9 @@ export interface LocalBusinessJsonLdProps {
   streetAddress: string;
   /** City. */
   city: string;
-  /** ISO 3166-1 alpha-2 country code (e.g. `"US"`). */
+  /** State or region (e.g. `"Edo. Aragua"`). */
+  region?: string;
+  /** ISO 3166-1 alpha-2 country code (e.g. `"VE"`). */
   country: string;
   /** E.164 phone number (e.g. `"+15551234567"`). */
   phone: string;
@@ -115,6 +121,7 @@ export function buildLocalBusinessJsonLd({
   description,
   streetAddress,
   city,
+  region,
   country,
   phone,
   email,
@@ -134,6 +141,7 @@ export function buildLocalBusinessJsonLd({
       "@type": "PostalAddress",
       streetAddress,
       addressLocality: city,
+      ...(region ? { addressRegion: region } : {}),
       addressCountry: country,
     },
   };

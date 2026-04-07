@@ -1,0 +1,9 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- MIXTRAN favicon -->
+  <!-- Navy background with rounded corners -->
+  <rect width="64" height="64" rx="14" fill="#1A1A2E"/>
+  <!-- M letterform -->
+  <path d="M10 48 L10 18 L22 18 L32 34 L42 18 L54 18 L54 48 L46 48 L46 28 L34 44 L30 44 L18 28 L18 48 Z" fill="#FFFFFF"/>
+  <!-- Paint roller stroke accent -->
+  <rect x="10" y="50" width="44" height="5" rx="2.5" fill="#E94560"/>
+</svg>

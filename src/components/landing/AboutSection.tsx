@@ -6,15 +6,21 @@ export interface AboutSectionProps {
   heading: string;
   /** Brand story or about copy. Supports multiple paragraphs separated by `\n\n`. */
   body: string;
-  /** Absolute URL to the brand/studio photo. */
+  /**
+   * Absolute URL to the brand/studio photo.
+   * Pass an empty string while the image is pending — the photo column is hidden.
+   */
   photoUrl: string;
   /** Accessible alt text for the photo. */
   photoAlt: string;
 }
 
 /**
- * About / brand story section with a two-column layout on larger screens:
- * body copy on the left, brand photo on the right.
+ * About / brand story section.
+ *
+ * Renders a two-column layout (copy + photo) on large screens when a photo URL
+ * is provided. When `photoUrl` is empty the section switches to a single
+ * centered column so the page looks correct before images are ready.
  *
  * Content is passed as props so Phase 4 can feed it from DynamoDB with
  * zero refactor to this component.
@@ -27,6 +33,7 @@ export function AboutSection({
 }: AboutSectionProps) {
   /** Split body on double newline to support multi-paragraph content. */
   const paragraphs = body.split("\n\n").filter(Boolean);
+  const hasPhoto = photoUrl.length > 0;
 
   return (
     <section
@@ -34,7 +41,14 @@ export function AboutSection({
       aria-labelledby="about-heading"
       className="bg-background py-[var(--section-padding-y)] px-[var(--section-padding-x)]"
     >
-      <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-center">
+      <div
+        className={[
+          "mx-auto max-w-6xl",
+          hasPhoto
+            ? "grid gap-12 lg:grid-cols-2 lg:items-center"
+            : "max-w-3xl",
+        ].join(" ")}
+      >
         {/* Text column */}
         <div>
           <h2
@@ -52,16 +66,18 @@ export function AboutSection({
           </div>
         </div>
 
-        {/* Photo column */}
-        <div className="relative aspect-[4/3] overflow-hidden rounded-xl shadow-card">
-          <Image
-            src={photoUrl}
-            alt={photoAlt}
-            fill
-            className="object-cover object-center"
-            sizes="(max-width: 1024px) 100vw, 50vw"
-          />
-        </div>
+        {/* Photo column — only rendered when a URL is provided */}
+        {hasPhoto && (
+          <div className="relative aspect-[4/3] overflow-hidden rounded-xl shadow-card">
+            <Image
+              src={photoUrl}
+              alt={photoAlt}
+              fill
+              className="object-cover object-center"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+            />
+          </div>
+        )}
       </div>
     </section>
   );

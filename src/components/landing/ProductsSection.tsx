@@ -4,11 +4,14 @@ import Image from "next/image";
 export interface ProductItem {
   /** Unique identifier for the product line. */
   id: string;
-  /** Product line name (e.g. "Premium Interior"). */
+  /** Product line name (e.g. "MLQ"). */
   name: string;
   /** Short marketing description. */
   description: string;
-  /** Absolute URL to the product image. */
+  /**
+   * Absolute URL to the product image.
+   * Pass an empty string while the image is pending — the image slot is hidden.
+   */
   imageUrl: string;
 }
 
@@ -25,7 +28,10 @@ export interface ProductsSectionProps {
 /**
  * Products section — renders a responsive grid of paint product line cards.
  *
- * Each card shows the product image, name, and description.
+ * Each card shows the product name and description. The image slot is only
+ * rendered when `imageUrl` is non-empty, so the card looks correct before
+ * product photos are available.
+ *
  * Content is passed as props so Phase 4 can feed it from DynamoDB with
  * zero refactor to this component.
  */
@@ -57,25 +63,24 @@ export function ProductsSection({
         </div>
 
         {/* Grid */}
-        <ul
-          role="list"
-          className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
-        >
+        <ul role="list" className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => (
             <li
               key={product.id}
               className="overflow-hidden rounded-lg border border-border bg-surface shadow-card transition-shadow hover:shadow-modal"
             >
-              {/* Product image */}
-              <div className="relative aspect-[4/3]">
-                <Image
-                  src={product.imageUrl}
-                  alt={product.name}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                />
-              </div>
+              {/* Product image — only rendered when a URL is provided */}
+              {product.imageUrl.length > 0 && (
+                <div className="relative aspect-[4/3]">
+                  <Image
+                    src={product.imageUrl}
+                    alt={product.name}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  />
+                </div>
+              )}
 
               {/* Product info */}
               <div className="p-5">

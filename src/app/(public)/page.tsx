@@ -36,14 +36,14 @@ const HERO = {
     "Asesoría de color experta y pinturas premium para hogares y negocios. Hacemos realidad tu visión.",
   ctaText: "Agendar asesoría de color",
   ctaHref: "/agendar",
-  backgroundImageUrl: "/images/hero-bg.jpg",
+  backgroundImageUrl: "/images/hero-bg.png",
 };
 
 const ABOUT = {
   heading: "Hecho con pasión, aplicado con precisión",
   body:
     "Somos un equipo de consultores de color certificados y pintores maestros dedicados a transformar espacios a través del arte del color.\n\nCon más de 15 años de experiencia y cientos de proyectos concluidos, combinamos materiales premium con una técnica meticulosa para entregar resultados que superan expectativas.",
-  photoUrl: "/images/about-studio.jpg",
+  photoUrl: "/images/about-studio.png",
   photoAlt: "Nuestro estudio y espacio de consultoría de color",
 };
 
@@ -56,21 +56,21 @@ const PRODUCTS = {
       name: "Interior Premium",
       description:
         "Acabados mate y cáscara de huevo de textura aterciopelada formulados para espacios habitables. Sin VOC, lavables y duraderos.",
-      imageUrl: "/images/product-interior.jpg",
+      imageUrl: "/images/product-interior.png",
     },
     {
       id: "exterior",
       name: "Escudo Climático Exterior",
       description:
         "Pintura exterior de alta opacidad y resistencia UV que soporta condiciones extremas sin perder su color vibrante.",
-      imageUrl: "/images/product-exterior.jpg",
+      imageUrl: "/images/product-exterior.png",
     },
     {
       id: "specialty",
       name: "Especialidades y Acentos",
       description:
         "Acabados metálicos, tiza y texturizados para muros de acento, muebles e instalaciones artísticas.",
-      imageUrl: "/images/product-specialty.jpg",
+      imageUrl: "/images/product-specialty.png",
     },
   ],
 };

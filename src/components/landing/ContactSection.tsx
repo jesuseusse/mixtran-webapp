@@ -1,0 +1,207 @@
+"use client";
+
+import { useState, FormEvent } from "react";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
+import { Snackbar } from "@/components/ui/Snackbar";
+
+/** Contact details shown alongside the form. */
+export interface ContactInfo {
+  /** E.164 phone number (e.g. `"+15551234567"`). Also used as `href="tel:..."`. */
+  phone: string;
+  /** Business email address. */
+  email: string;
+  /** Full street address. */
+  address: string;
+}
+
+/** Props accepted by ContactSection. Matches the Phase 4 DynamoDB content shape. */
+export interface ContactSectionProps {
+  /** Section heading. */
+  heading: string;
+  /** Supporting copy. */
+  subtitle?: string;
+  /** Static contact details displayed alongside the form. */
+  contactInfo: ContactInfo;
+}
+
+/**
+ * Contact section with a two-column layout: contact details left, form right.
+ *
+ * The form is client-side only in Phase 1 (no backend submission yet).
+ * In Phase 2+ it will POST to `/api/contacts`. The props signature is
+ * already complete so no refactor will be needed.
+ *
+ * Content is passed as props so Phase 4 can feed it from DynamoDB with
+ * zero refactor to this component.
+ */
+export function ContactSection({
+  heading,
+  subtitle,
+  contactInfo,
+}: ContactSectionProps) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+
+  /**
+   * Handles form submission in Phase 1.
+   * Shows a confirmation snackbar — no backend call yet.
+   */
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    // Phase 2: POST to /api/contacts
+    setName("");
+    setEmail("");
+    setMessage("");
+    setSnackbarVisible(true);
+  }
+
+
+  return (
+    <section
+      id="contact"
+      aria-labelledby="contact-heading"
+      className="bg-background py-[var(--section-padding-y)] px-[var(--section-padding-x)]"
+    >
+      <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-start">
+        {/* Contact details */}
+        <div>
+          <h2
+            id="contact-heading"
+            className="mb-4 font-heading text-3xl font-bold text-text-primary sm:text-4xl"
+          >
+            {heading}
+          </h2>
+          {subtitle && (
+            <p className="mb-8 text-base leading-relaxed text-text-secondary">
+              {subtitle}
+            </p>
+          )}
+
+          <ul className="space-y-4 text-text-secondary">
+            <li className="flex items-start gap-3">
+              {/* Phone icon */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="mt-0.5 shrink-0 text-accent"
+                aria-hidden="true"
+              >
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12 19.79 19.79 0 0 1 1.05 3.4 2 2 0 0 1 3 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16l.92.92z" />
+              </svg>
+              <a
+                href={`tel:${contactInfo.phone}`}
+                className="hover:text-accent transition-colors"
+              >
+                {contactInfo.phone}
+              </a>
+            </li>
+
+            <li className="flex items-start gap-3">
+              {/* Email icon */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="mt-0.5 shrink-0 text-accent"
+                aria-hidden="true"
+              >
+                <rect width="20" height="16" x="2" y="4" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+              </svg>
+              <a
+                href={`mailto:${contactInfo.email}`}
+                className="hover:text-accent transition-colors"
+              >
+                {contactInfo.email}
+              </a>
+            </li>
+
+            <li className="flex items-start gap-3">
+              {/* Map pin icon */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="mt-0.5 shrink-0 text-accent"
+                aria-hidden="true"
+              >
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <span>{contactInfo.address}</span>
+            </li>
+          </ul>
+        </div>
+
+        {/* Contact form */}
+        <form
+          onSubmit={handleSubmit}
+          noValidate
+          className="rounded-lg border border-border bg-surface p-6 shadow-card space-y-5"
+        >
+          <Input
+            label="Nombre"
+            type="text"
+            required
+            autoComplete="name"
+            placeholder="Tu nombre completo"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <Input
+            label="Email"
+            type="email"
+            required
+            autoComplete="email"
+            placeholder="tu@correo.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Textarea
+            label="Mensaje"
+            required
+            rows={5}
+            placeholder="¿En qué podemos ayudarte?"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
+          <button
+            type="submit"
+            className="w-full inline-flex items-center justify-center h-10 rounded-md bg-primary text-on-primary text-sm font-semibold shadow-button transition-colors hover:bg-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          >
+            Enviar mensaje
+          </button>
+        </form>
+      </div>
+
+      <Snackbar
+        visible={snackbarVisible}
+        message="¡Mensaje enviado! Te responderemos a la brevedad."
+        type="success"
+        onDismiss={() => setSnackbarVisible(false)}
+      />
+    </section>
+  );
+}

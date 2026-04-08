@@ -36,3 +36,6 @@ export type { SpinnerProps, SpinnerSize } from "./Spinner";
 
 export { Rating } from "./Rating";
 export type { RatingProps, RatingSize } from "./Rating";
+
+export { AnimateInView } from "./AnimateInView";
+export type { AnimateInViewProps, RevealVariant } from "./AnimateInView";

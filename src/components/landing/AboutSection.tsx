@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { AnimateInView } from "@/components/ui/AnimateInView";
 
 /** Props accepted by AboutSection. Matches the Phase 4 DynamoDB content shape. */
 export interface AboutSectionProps {
@@ -22,6 +23,7 @@ export interface AboutSectionProps {
  * is provided. When `photoUrl` is empty the section switches to a single
  * centered column so the page looks correct before images are ready.
  *
+ * Text column slides in from the left; photo slides in from the right on scroll.
  * Content is passed as props so Phase 4 can feed it from DynamoDB with
  * zero refactor to this component.
  */
@@ -31,7 +33,6 @@ export function AboutSection({
   photoUrl,
   photoAlt,
 }: AboutSectionProps) {
-  /** Split body on double newline to support multi-paragraph content. */
   const paragraphs = body.split("\n\n").filter(Boolean);
   const hasPhoto = photoUrl.length > 0;
 
@@ -49,8 +50,8 @@ export function AboutSection({
             : "max-w-3xl",
         ].join(" ")}
       >
-        {/* Text column */}
-        <div>
+        {/* Text column — slides in from left */}
+        <AnimateInView variant="left">
           <h2
             id="about-heading"
             className="mb-6 font-heading text-3xl font-bold text-text-primary sm:text-4xl"
@@ -64,19 +65,22 @@ export function AboutSection({
               </p>
             ))}
           </div>
-        </div>
+        </AnimateInView>
 
-        {/* Photo column — only rendered when a URL is provided */}
+        {/* Photo column — slides in from right */}
         {hasPhoto && (
-          <div className="relative aspect-[4/3] overflow-hidden rounded-xl shadow-card">
-            <Image
-              src={photoUrl}
-              alt={photoAlt}
-              fill
-              className="object-cover object-center"
-              sizes="(max-width: 1024px) 100vw, 50vw"
-            />
-          </div>
+          <AnimateInView variant="right" delay={150}>
+            <div className="relative aspect-[4/3] overflow-hidden rounded-xl shadow-card">
+              <Image
+                src={photoUrl}
+                alt={photoAlt}
+                fill
+                className="object-cover object-center"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                loading="eager"
+              />
+            </div>
+          </AnimateInView>
         )}
       </div>
     </section>

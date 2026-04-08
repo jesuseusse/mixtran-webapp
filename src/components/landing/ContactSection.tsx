@@ -4,6 +4,7 @@ import { useState, FormEvent } from "react";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Snackbar } from "@/components/ui/Snackbar";
+import { AnimateInView } from "@/components/ui/AnimateInView";
 
 /** Contact details shown alongside the form. */
 export interface ContactInfo {
@@ -71,8 +72,8 @@ export function ContactSection({
       className="bg-background py-[var(--section-padding-y)] px-[var(--section-padding-x)]"
     >
       <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-start">
-        {/* Contact details */}
-        <div>
+        {/* Contact details — slides in from left */}
+        <AnimateInView variant="left">
           <h2
             id="contact-heading"
             className="mb-4 font-heading text-3xl font-bold text-text-primary sm:text-4xl"
@@ -203,9 +204,10 @@ export function ContactSection({
               </li>
             )}
           </ul>
-        </div>
+        </AnimateInView>
 
-        {/* Contact form */}
+        {/* Contact form — slides in from right */}
+        <AnimateInView variant="right" delay={150}>
         <form
           onSubmit={handleSubmit}
           noValidate
@@ -244,6 +246,7 @@ export function ContactSection({
             Enviar mensaje
           </button>
         </form>
+        </AnimateInView>
       </div>
 
       <Snackbar

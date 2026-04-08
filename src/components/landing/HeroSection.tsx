@@ -22,8 +22,10 @@ export interface HeroSectionProps {
  * Full-viewport hero section with an optional background image overlay,
  * headline, subtitle, and a primary CTA button.
  *
- * When `backgroundImageUrl` is empty the section renders with the primary
- * brand color as background so the page looks correct before images are ready.
+ * Animations are pure CSS (no JS, no hydration cost):
+ * - Overlay fades in on load.
+ * - Headline, subtitle, and CTA stagger up with increasing delays.
+ * All animations are disabled when `prefers-reduced-motion: reduce` is set.
  *
  * Content is passed as props so Phase 4 can feed it from DynamoDB with
  * zero refactor to this component.
@@ -55,23 +57,26 @@ export function HeroSection({
         />
       )}
 
-      {/* Dark overlay — always present to keep text legible */}
-      <div aria-hidden="true" className="absolute inset-0 bg-primary/70" />
+      {/* Dark overlay — fades in on load */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-primary/70 hero-anim-overlay"
+      />
 
-      {/* Content */}
+      {/* Content — each element staggers up */}
       <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
         <h1
           id="hero-heading"
-          className="mb-6 font-heading text-4xl font-bold text-on-primary sm:text-5xl lg:text-6xl"
+          className="mb-6 font-heading text-4xl font-bold text-on-primary sm:text-5xl lg:text-6xl hero-anim-headline"
         >
           {headline}
         </h1>
-        <p className="mb-10 text-lg text-on-primary/80 sm:text-xl">
+        <p className="mb-10 text-lg text-on-primary/80 sm:text-xl hero-anim-subtitle">
           {subtitle}
         </p>
         <a
           href={ctaHref}
-          className="inline-flex items-center justify-center h-12 px-7 rounded-lg bg-accent text-on-accent text-base font-semibold shadow-button transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+          className="inline-flex items-center justify-center h-12 px-7 rounded-lg bg-accent text-on-accent text-base font-semibold shadow-button transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 hero-anim-cta"
         >
           {ctaText}
         </a>

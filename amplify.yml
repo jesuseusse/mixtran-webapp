@@ -3,7 +3,7 @@ frontend:
   phases:
     preBuild:
       commands:
-        - yarn install --frozen-lockfile
+        - yarn install
     build:
       commands:
         - yarn build

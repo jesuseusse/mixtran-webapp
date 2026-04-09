@@ -6,6 +6,9 @@ frontend:
         - yarn install
     build:
       commands:
+        # Write all NEXT_* and AWS_* env vars to .env.production so Next.js
+        # SSR functions and API routes can read them at runtime on Amplify.
+        - env | grep -E "^(NEXT_|AWS_)" >> .env.production
         - yarn build
   artifacts:
     baseDirectory: .next

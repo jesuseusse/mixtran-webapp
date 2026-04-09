@@ -19,7 +19,7 @@ export function generateMetadata(): Metadata {
   return buildMetadata({
     title: "MIXTRAN | Revestimientos Plásticos, Grafiados y Texturizados",
     description:
-      "MIXTRAN fabrica revestimientos acrílicos con partículas de cuarzo para interiores y exteriores. Resistentes al clima, versátiles en cualquier superficie. Cagua, Edo. Aragua.",
+      "MIXTRAN fabrica revestimientos plásticos con partículas de cuarzo para interiores y exteriores. Resistentes al clima, versátiles en cualquier superficie. Cagua, Edo. Aragua.",
     path: "/",
     locale: "es_VE",
     ogImage: "/images/og-default.png",
@@ -27,10 +27,10 @@ export function generateMetadata(): Metadata {
       "revestimientos plásticos",
       "pinturas texturizadas",
       "fijador",
-      "revestimientos acrílicos",
       "Cagua",
       "Aragua",
       "Venezuela",
+      "pinturas"
     ],
   });
 }
@@ -52,7 +52,7 @@ const HERO = {
 const ABOUT = {
   heading: "¿Qué es MIXTRAN?",
   body:
-    "MIXTRAN MLQ es un revestimiento acrílico con partículas de cuarzo diseñado para proteger y embellecer cualquier superficie. Su fórmula avanzada lo hace resistente a todos los climas, con desempeño comprobado en zonas costeras de alta salinidad y en regiones montañosas.\n\nSe adhiere a una amplia variedad de sustratos: paredes en buen estado, yeso seco, ladrillos de cemento, madera, hierro, láminas metálicas, vidrio, aluminio, paneles de cualquier tipo y cartón piedra. Ideal tanto para interiores como para exteriores.\n\nAntes de aplicar MLQ, se recomienda usar nuestro Fijador para sellar la superficie, mejorar la adherencia y garantizar un acabado duradero y uniforme.",
+    "MIXTRAN MLQ es un revestimiento plástico con partículas de cuarzo diseñado para proteger y embellecer cualquier superficie. Su fórmula avanzada lo hace resistente a todos los climas, con desempeño comprobado en zonas costeras de alta salinidad y en regiones montañosas.\n\nSe adhiere a una amplia variedad de sustratos: paredes en buen estado, yeso seco, ladrillos de cemento, madera, hierro, láminas metálicas, vidrio, aluminio, paneles de cualquier tipo y cartón piedra. Ideal tanto para interiores como para exteriores.\n\nAntes de aplicar MLQ, se recomienda usar nuestro Fijador para sellar la superficie, mejorar la adherencia y garantizar un acabado duradero y uniforme.",
   photoUrl: "/images/about-studio.png",
   photoAlt: "Aplicación de revestimiento MIXTRAN MLQ en pared exterior",
 };
@@ -72,7 +72,7 @@ const PRODUCTS = {
       id: "mlq",
       name: "MLQ",
       description:
-        "Revestimiento acrílico con partículas de cuarzo. Resiste cualquier clima: zonas costeras con alta salinidad y áreas montañosas. Uso interior y exterior. Compatible con paredes, yeso, cemento, madera, hierro, vidrio, aluminio y paneles de todo tipo.",
+        "Revestimiento plástico con partículas de cuarzo. Resiste cualquier clima: zonas costeras con alta salinidad y áreas montañosas. Uso interior y exterior. Compatible con paredes, yeso, cemento, madera, hierro, vidrio, aluminio y paneles de todo tipo.",
       imageUrl: "/images/product-exterior.png",
     },
   ],
@@ -122,7 +122,7 @@ const CONTACT = {
 const LOCAL_BUSINESS_JSON_LD = buildLocalBusinessJsonLd({
   name: "MIXTRAN",
   description:
-    "MIXTRAN fabrica revestimientos acrílicos con partículas de cuarzo para interiores y exteriores. Resistentes al clima, versátiles en cualquier superficie.",
+    "MIXTRAN fabrica revestimientos plásticos con partículas de cuarzo para interiores y exteriores. Resistentes al clima, versátiles en cualquier superficie.",
   streetAddress: "CALLE 10-08 CASA NRO 14-A URB CIUDAD JARDIN CAGUA ARAGUA ZONA POSTAL 2122",
   city: "Cagua",
   region: "Edo. Aragua",

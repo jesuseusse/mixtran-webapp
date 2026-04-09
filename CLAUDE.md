@@ -11,7 +11,7 @@
 Paint brand marketing and operations platform built entirely on AWS.
 Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · AWS Amplify + DynamoDB + Cognito + SES + S3
 
-**Current phase:** Phase 1 — Landing Page  
+**Current phase:** Phase 2 — Booking System  
 **Update this line** when moving to the next phase.
 
 ---
@@ -157,8 +157,8 @@ In Phase 1 content is hardcoded as props — component signatures must already a
 
 | Phase | Deliverable | Status |
 |---|---|---|
-| 1 | Landing page (SSG + ISR, SEO, all UI primitives) | 🔄 In progress |
-| 2 | Booking system (Cognito, calendar, SES emails) | ⏳ Pending |
+| 1 | Landing page (SSG + ISR, SEO, all UI primitives) | ✅ Complete |
+| 2 | Booking system (Cognito, calendar, SES emails) | 🔄 In progress |
 | 3 | CRM + Reviews (contacts auto-upsert, moderation) | ⏳ Pending |
 | 4 | Landing editor (DynamoDB config, S3 media, revalidation) | ⏳ Pending |
 
@@ -192,6 +192,44 @@ Complete these in order. Check each one when done.
 - [ ] Deploy to Amplify + custom domain via Route 53
 - [ ] Lighthouse SEO score ≥ 90
 - [ ] Core Web Vitals pass
+
+---
+
+## Phase 2 checklist
+
+- [x] `yarn add @aws-sdk/client-dynamodb @aws-sdk/lib-dynamodb @aws-sdk/client-sesv2 @aws-sdk/client-cognito-identity-provider aws-jwt-verify`
+- [x] `src/lib/types/Slot.ts` — CalendarSlot, SlotStatus
+- [x] `src/lib/types/Booking.ts` — CreateBookingInput, UpdateBookingStatusInput
+- [x] `src/lib/types/Contact.ts` — Contact, UpsertContactInput
+- [x] `src/lib/aws/dynamodb.ts` — DocumentClient singleton
+- [x] `src/lib/aws/ses.ts` — sendEmail() wrapper
+- [x] `src/lib/auth/verifySession.ts` — lazy Cognito JWT verifier
+- [x] `src/lib/repositories/slotRepository.ts`
+- [x] `src/lib/repositories/contactRepository.ts`
+- [x] `src/lib/services/bookingService.ts`
+- [x] `src/lib/services/contactService.ts`
+- [x] `src/lib/services/emailService.ts` — SES HTML email templates (ES)
+- [x] `src/app/api/auth/login/route.ts` + `logout/route.ts`
+- [x] `src/app/api/calendar/slots/route.ts` (GET public + POST admin)
+- [x] `src/app/api/calendar/slots/[id]/route.ts` (DELETE admin)
+- [x] `src/app/api/calendar/slots/bulk/route.ts` (POST admin)
+- [x] `src/app/api/calendar/bookings/route.ts` (POST public)
+- [x] `src/app/api/calendar/bookings/[id]/route.ts` (PATCH admin)
+- [x] `src/app/(public)/agendar/page.tsx` — public booking page
+- [x] `src/app/(admin)/login/page.tsx`
+- [x] `src/app/(admin)/dashboard/layout.tsx` — auth guard + sidebar
+- [x] `src/app/(admin)/dashboard/page.tsx` — KPI overview
+- [x] `src/app/(admin)/dashboard/calendar/page.tsx`
+- [x] `src/app/(admin)/dashboard/calendar/bookings/page.tsx`
+- [x] `src/app/(admin)/dashboard/contacts/page.tsx`
+- [x] `src/components/admin/SlotManager.tsx`
+- [x] `src/components/admin/BookingTable.tsx`
+- [x] `yarn build` passes with zero TypeScript errors
+- [x] Create DynamoDB tables (see `docs/aws-dynamodb-setup.md`)
+- [x] Create Cognito user pool + admin user (see `docs/aws-cognito-setup.md`)
+- [ ] Verify SES domain + request production access (see `docs/aws-ses-setup.md`)
+- [ ] Set all NEXT_* env vars in Amplify Console
+- [ ] End-to-end test: book a slot → emails arrive → admin confirms
 
 ---
 

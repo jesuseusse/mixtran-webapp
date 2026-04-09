@@ -76,11 +76,19 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (err) {
-    console.error("POST /api/auth/login error:", (err as Error)?.name, (err as Error)?.message);
+    const e = err as Error;
+    console.error(
+      "POST /api/auth/login error — name:", e?.name,
+      "message:", e?.message,
+      "clientId:", process.env.NEXT_COGNITO_CLIENT_ID ? "SET" : "MISSING",
+      "userPoolId:", process.env.NEXT_COGNITO_USER_POOL_ID ? "SET" : "MISSING",
+      "secret:", process.env.NEXT_COGNITO_CLIENT_SECRET ? "SET" : "NOT SET",
+      "region:", process.env.NEXT_AWS_REGION ?? "MISSING"
+    );
     const message =
-      err instanceof Error && err.name === "NotAuthorizedException"
+      e?.name === "NotAuthorizedException"
         ? "Credenciales incorrectas"
-        : "Error de autenticación";
+        : `Error de autenticación (${e?.name ?? "unknown"})`;
     return NextResponse.json(errorResponse(message, "AUTH_ERROR"), { status: 401 });
   }
 }

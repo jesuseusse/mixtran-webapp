@@ -3,8 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Mixtran Paint — Asesoría de Color Premium",
-    template: "%s | Mixtran Paint",
+    default: "Mixtran Revestimientos — Asesoría de Color Premium",
+    template: "%s | Mixtran Revestimientos",
   },
   description:
     "Consultoría de color experta y soluciones de pintura de alta calidad. Agenda tu cita de asesoría de color hoy.",

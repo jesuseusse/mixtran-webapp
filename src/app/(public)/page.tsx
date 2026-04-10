@@ -7,6 +7,8 @@ import { GallerySection } from "@/components/landing/GallerySection";
 import { ReviewsSection } from "@/components/landing/ReviewsSection";
 import { BookingCtaSection } from "@/components/landing/BookingCtaSection";
 import { ContactSection } from "@/components/landing/ContactSection";
+import * as reviewService from "@/lib/services/reviewService";
+import type { ReviewItem } from "@/components/landing/ReviewsSection";
 
 /** ISR revalidation interval — 1 hour. Phase 4 calls revalidatePath('/') on content change. */
 export const revalidate = 3600;
@@ -85,17 +87,9 @@ const GALLERY = {
   /* Gallery images will be uploaded to S3 and served via CloudFront in Phase 4. */
 };
 
-const REVIEWS = {
+const REVIEWS_HEADING = {
   heading: "Lo que dicen nuestros clientes",
   subtitle: "Opiniones reales de clientes que confiaron en MIXTRAN.",
-  reviews: [] as {
-    reviewId: string;
-    authorName: string;
-    rating: number;
-    body: string;
-    createdAt: string;
-  }[],
-  /* Populated from DynamoDB in Phase 4 via reviewService.getApproved(). */
 };
 
 const BOOKING_CTA = {
@@ -141,11 +135,25 @@ const PRODUCT_LIST_JSON_LD = buildProductListJsonLd(
 /**
  * Public landing page — rendered as static with ISR (revalidate = 3600).
  *
- * Composes all landing section components with real MIXTRAN brand content.
- * In Phase 4 the static objects above are replaced with DynamoDB service
- * calls — no changes to the component tree are required.
+ * Approved reviews are fetched from DynamoDB at build/revalidate time.
+ * revalidatePath('/') is called from reviewService.approveReview() so new
+ * approvals appear within seconds without a full rebuild.
  */
-export default function LandingPage() {
+export default async function LandingPage() {
+  /* Fetch approved reviews — returns [] gracefully if the table is not yet created. */
+  const approvedReviews: ReviewItem[] = await reviewService
+    .getApprovedReviews()
+    .then((reviews) =>
+      reviews.map((r) => ({
+        reviewId: r.reviewId,
+        authorName: r.authorName,
+        rating: r.rating,
+        body: r.body,
+        createdAt: r.createdAt,
+      }))
+    )
+    .catch(() => []);
+
   return (
     <>
       {/* JSON-LD structured data */}
@@ -163,7 +171,7 @@ export default function LandingPage() {
         <AboutSection {...ABOUT} />
         <ProductsSection {...PRODUCTS} />
         {GALLERY.items.length > 0 && <GallerySection {...GALLERY} />}
-        <ReviewsSection {...REVIEWS} />
+        <ReviewsSection {...REVIEWS_HEADING} reviews={approvedReviews} />
         <BookingCtaSection {...BOOKING_CTA} />
         <ContactSection {...CONTACT} />
       </main>

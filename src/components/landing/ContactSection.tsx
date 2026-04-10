@@ -4,6 +4,7 @@ import { useState, FormEvent } from "react";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Snackbar } from "@/components/ui/Snackbar";
+import { Spinner } from "@/components/ui/Spinner";
 import { AnimateInView } from "@/components/ui/AnimateInView";
 
 /** Contact details shown alongside the form. */
@@ -49,20 +50,37 @@ export function ContactSection({
 }: ContactSectionProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarType, setSnackbarType] = useState<"success" | "error">("success");
+  const [snackbarMessage, setSnackbarMessage] = useState("¡Mensaje enviado! Te responderemos a la brevedad.");
+  const [submitting, setSubmitting] = useState(false);
 
-  /**
-   * Handles form submission in Phase 1.
-   * Shows a confirmation snackbar — no backend call yet.
-   */
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  /** Submits the contact form and upserts the contact record via the API. */
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // Phase 2: POST to /api/contacts
-    setName("");
-    setEmail("");
-    setMessage("");
-    setSnackbarVisible(true);
+    setSubmitting(true);
+    try {
+      /* Upsert the contact record with the provided data. */
+      await fetch("/api/contacts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, phone, message }),
+      });
+      setSnackbarMessage("¡Mensaje enviado! Te responderemos a la brevedad.");
+      setSnackbarType("success");
+      setName("");
+      setEmail("");
+      setPhone("");
+      setMessage("");
+    } catch {
+      setSnackbarMessage("Error al enviar. Intenta de nuevo.");
+      setSnackbarType("error");
+    } finally {
+      setSubmitting(false);
+      setSnackbarVisible(true);
+    }
   }
 
   return (
@@ -231,6 +249,15 @@ export function ContactSection({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
+          <Input
+            label="Teléfono"
+            type="tel"
+            required
+            autoComplete="tel"
+            placeholder="0412-0000000"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
           <Textarea
             label="Mensaje"
             required
@@ -241,9 +268,11 @@ export function ContactSection({
           />
           <button
             type="submit"
-            className="w-full inline-flex items-center justify-center h-10 rounded-md bg-primary text-on-primary text-sm font-semibold shadow-button transition-colors hover:bg-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            disabled={submitting}
+            className="w-full inline-flex items-center justify-center gap-2 h-10 rounded-md bg-primary text-on-primary text-sm font-semibold shadow-button transition-colors hover:bg-primary-dark disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
-            Enviar mensaje
+            {submitting && <Spinner size="sm" />}
+            {submitting ? "Enviando…" : "Enviar mensaje"}
           </button>
         </form>
         </AnimateInView>
@@ -251,8 +280,8 @@ export function ContactSection({
 
       <Snackbar
         visible={snackbarVisible}
-        message="¡Mensaje enviado! Te responderemos a la brevedad."
-        type="success"
+        message={snackbarMessage}
+        type={snackbarType}
         onDismiss={() => setSnackbarVisible(false)}
       />
     </section>

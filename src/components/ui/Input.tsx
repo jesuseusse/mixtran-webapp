@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, InputHTMLAttributes } from "react";
+import { forwardRef, InputHTMLAttributes, useId } from "react";
 
 /** Props accepted by the Input component. */
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -31,7 +31,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   { label, error, helperText, className = "", id, ...rest },
   ref
 ) {
-  const inputId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
+  /* useId() generates a stable ID that matches between server and client renders,
+     avoiding hydration mismatches caused by locale-dependent string transforms. */
+  const generated = useId();
+  const inputId = id ?? generated;
   const hasError = Boolean(error);
 
   return (

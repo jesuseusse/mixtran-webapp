@@ -11,7 +11,7 @@
 Paint brand marketing and operations platform built entirely on AWS.
 Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · AWS Amplify + DynamoDB + Cognito + SES + S3
 
-**Current phase:** Phase 2 — Booking System  
+**Current phase:** Phase 3 — CRM + Reviews  
 **Update this line** when moving to the next phase.
 
 ---
@@ -158,8 +158,8 @@ In Phase 1 content is hardcoded as props — component signatures must already a
 | Phase | Deliverable | Status |
 |---|---|---|
 | 1 | Landing page (SSG + ISR, SEO, all UI primitives) | ✅ Complete |
-| 2 | Booking system (Cognito, calendar, SES emails) | 🔄 In progress |
-| 3 | CRM + Reviews (contacts auto-upsert, moderation) | ⏳ Pending |
+| 2 | Booking system (Cognito, calendar, SES emails) | ✅ Complete |
+| 3 | CRM + Reviews (contacts auto-upsert, moderation) | 🔄 In progress |
 | 4 | Landing editor (DynamoDB config, S3 media, revalidation) | ⏳ Pending |
 
 **Update status column** as phases complete.
@@ -230,6 +230,49 @@ Complete these in order. Check each one when done.
 - [ ] Verify SES domain + request production access (see `docs/aws-ses-setup.md`)
 - [ ] Set all NEXT_* env vars in Amplify Console
 - [ ] End-to-end test: book a slot → emails arrive → admin confirms
+
+---
+
+## Phase 3 checklist
+
+- [x] `src/lib/types/Review.ts` — Review, ReviewStatus, CreateReviewInput
+- [x] `src/lib/repositories/reviewRepository.ts`
+- [x] `src/lib/services/reviewService.ts` — submit, approve, reject, delete + revalidatePath('/')
+- [x] `src/app/api/contacts/route.ts` (GET admin)
+- [x] `src/app/api/contacts/[email]/route.ts` (GET + PATCH admin)
+- [x] `src/app/api/reviews/route.ts` (GET admin + POST public)
+- [x] `src/app/api/reviews/[id]/route.ts` (PATCH + DELETE admin)
+- [x] `src/app/(public)/resenas/page.tsx` — public review submission form
+- [x] `src/app/(admin)/dashboard/contacts/[email]/page.tsx` — contact detail + booking history
+- [x] `src/app/(admin)/dashboard/reviews/page.tsx` — moderation queue
+- [x] `src/components/admin/ContactNotesForm.tsx`
+- [x] `src/components/admin/ReviewModerationCard.tsx`
+- [x] `src/components/admin/ReviewModerationList.tsx`
+- [x] Landing page wired to `reviewService.getApprovedReviews()` (ISR)
+- [x] `yarn build` passes with zero TypeScript errors
+- [ ] End-to-end test: submit review → admin approves → appears on landing
+
+---
+
+## Smoke tests — mandatory after every modification
+
+After **every code change**, run the smoke test suite before considering the task done:
+
+```bash
+yarn test
+```
+
+- All 7 tests must pass. If any fail, fix the regression before moving on.
+- Tests live in `tests/smoke/`. Each file covers one happy path:
+  - `login.test.ts` — POST /api/auth/login
+  - `landing.test.ts` — reviewService.getApprovedReviews (landing data layer)
+  - `contact-form.test.ts` — POST /api/contacts (public contact form)
+  - `booking-form.test.ts` — POST /api/calendar/bookings (public booking form)
+  - `slot-create.test.ts` — POST /api/calendar/slots (admin create slot)
+  - `bookings-list.test.ts` — bookingService.getAllSlots (admin reservas data layer)
+  - `contacts-list.test.ts` — GET /api/contacts (admin contacts list)
+- When adding a new feature or route, add the corresponding smoke test **in the same change**.
+- Tests run in ~400 ms — no AWS calls are made (all infrastructure is mocked).
 
 ---
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, TextareaHTMLAttributes } from "react";
+import { forwardRef, TextareaHTMLAttributes, useId } from "react";
 
 /** Props accepted by the Textarea component. */
 export interface TextareaProps
@@ -29,7 +29,8 @@ export interface TextareaProps
  */
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   function Textarea({ label, error, helperText, className = "", id, ...rest }, ref) {
-    const inputId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
+    const generated = useId();
+    const inputId = id ?? generated;
     const hasError = Boolean(error);
 
     return (

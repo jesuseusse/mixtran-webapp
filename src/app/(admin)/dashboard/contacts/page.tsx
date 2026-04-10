@@ -40,7 +40,12 @@ export default async function ContactsPage() {
               {contacts.map((contact) => (
                 <tr key={contact.email} className="hover:bg-background/50">
                   <Td>
-                    <span className="font-medium text-text-primary">{contact.name}</span>
+                    <a
+                      href={`/dashboard/contacts/${encodeURIComponent(contact.email)}`}
+                      className="font-medium text-text-primary hover:text-primary hover:underline"
+                    >
+                      {contact.name}
+                    </a>
                     {contact.company && (
                       <span className="ml-2 text-xs text-text-muted">{contact.company}</span>
                     )}

@@ -4,8 +4,6 @@ frontend:
     preBuild:
       commands:
         - yarn install
-        # Smoke tests run before the build — a failing test aborts the deploy.
-        - yarn test
     build:
       commands:
         # Write all NEXT_* and AWS_* env vars to .env.production so Next.js

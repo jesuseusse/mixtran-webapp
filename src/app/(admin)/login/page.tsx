@@ -38,9 +38,8 @@ export default function LoginPage() {
       }
     } catch {
       setError("Error de conexión. Intenta de nuevo.");
-    } finally {
-      setLoading(false);
-    }
+      setLoading(false)
+    }  
   }
 
   return (

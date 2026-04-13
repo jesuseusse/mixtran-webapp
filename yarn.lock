@@ -4189,6 +4189,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"husky@npm:^9.1.7":
+  version: 9.1.7
+  resolution: "husky@npm:9.1.7"
+  bin:
+    husky: bin.js
+  checksum: c2412753f15695db369634ba70f50f5c0b7e5cb13b673d0826c411ec1bd9ddef08c1dad89ea154f57da2521d2605bd64308af748749b27d08c5f563bcd89975f
+  languageName: node
+  linkType: hard
+
 "iconv-lite@npm:^0.7.2":
   version: 0.7.2
   resolution: "iconv-lite@npm:0.7.2"
@@ -4981,6 +4990,7 @@ __metadata:
     babel-plugin-react-compiler: ^1.0.0
     eslint: ^9
     eslint-config-next: 16.2.2
+    husky: ^9.1.7
     next: 16.2.2
     png-to-ico: ^3.0.1
     react: 19.2.4

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/Input";
+import { PhoneInput } from "@/components/ui/PhoneInput";
 import { Textarea } from "@/components/ui/Textarea";
 import { Snackbar } from "@/components/ui/Snackbar";
 import { Spinner } from "@/components/ui/Spinner";
@@ -50,7 +51,7 @@ export function ContactSection({
 }: ContactSectionProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState("+58");
   const [message, setMessage] = useState("");
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarType, setSnackbarType] = useState<"success" | "error">("success");
@@ -58,7 +59,7 @@ export function ContactSection({
   const [submitting, setSubmitting] = useState(false);
 
   /** Submits the contact form and upserts the contact record via the API. */
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
     setSubmitting(true);
     try {
@@ -249,14 +250,11 @@ export function ContactSection({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <Input
+          <PhoneInput
             label="Teléfono"
-            type="tel"
             required
-            autoComplete="tel"
-            placeholder="0412-0000000"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={setPhone}
           />
           <Textarea
             label="Mensaje"

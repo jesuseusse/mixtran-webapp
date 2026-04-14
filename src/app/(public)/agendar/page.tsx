@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, FormEvent, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/Input";
+import { PhoneInput } from "@/components/ui/PhoneInput";
 import { Textarea } from "@/components/ui/Textarea";
 import { Spinner } from "@/components/ui/Spinner";
 import { Snackbar } from "@/components/ui/Snackbar";
@@ -41,7 +42,7 @@ export default function AgendarPage() {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState("+58");
   const [message, setMessage] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
@@ -73,7 +74,7 @@ export default function AgendarPage() {
     };
   }, [date]);
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
     if (!selectedSlotId) return;
 
@@ -208,14 +209,11 @@ export default function AgendarPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <Input
+            <PhoneInput
               label="Teléfono"
-              type="tel"
               required
-              autoComplete="tel"
-              placeholder="0412-0000000"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={setPhone}
             />
             <Textarea
               label="Mensaje (opcional)"

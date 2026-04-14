@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as bookingService from "@/lib/services/bookingService";
 import { successResponse, errorResponse } from "@/lib/utils/apiResponse";
+import { hasKnownDialCode } from "@/lib/utils/phone";
 
 /**
  * POST /api/calendar/bookings
@@ -31,6 +32,13 @@ export async function POST(request: NextRequest) {
     /* Basic email format validation. */
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
       return NextResponse.json(errorResponse("Email inválido"), { status: 400 });
+    }
+
+    if (!hasKnownDialCode(body.phone)) {
+      return NextResponse.json(
+        errorResponse("El teléfono debe incluir un código de país válido (ej. +58)"),
+        { status: 400 }
+      );
     }
 
     await bookingService.createBooking({

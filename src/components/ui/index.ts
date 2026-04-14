@@ -39,3 +39,12 @@ export type { RatingProps, RatingSize } from "./Rating";
 
 export { AnimateInView } from "./AnimateInView";
 export type { AnimateInViewProps, RevealVariant } from "./AnimateInView";
+
+export { DataTable } from "./DataTable";
+export type { DataTableProps, ColumnDef, HideBelow } from "./DataTable";
+
+export { WhatsappContact } from "./WhatsappContact";
+export type { WhatsappContactProps } from "./WhatsappContact";
+
+export { PhoneInput } from "./PhoneInput";
+export type { PhoneInputProps } from "./PhoneInput";

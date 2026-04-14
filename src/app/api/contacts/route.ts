@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifySession } from "@/lib/auth/verifySession";
 import * as contactService from "@/lib/services/contactService";
 import { successResponse, errorResponse } from "@/lib/utils/apiResponse";
+import { hasKnownDialCode } from "@/lib/utils/phone";
 
 /**
  * GET /api/contacts
@@ -49,6 +50,13 @@ export async function POST(request: NextRequest) {
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
       return NextResponse.json(errorResponse("Email inválido"), { status: 400 });
+    }
+
+    if (!hasKnownDialCode(body.phone)) {
+      return NextResponse.json(
+        errorResponse("El teléfono debe incluir un código de país válido (ej. +58)"),
+        { status: 400 }
+      );
     }
 
     await contactService.upsertFromLanding({

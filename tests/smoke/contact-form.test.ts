@@ -17,13 +17,13 @@ vi.mock("@/lib/services/contactService", () => ({
 import { POST } from "@/app/api/contacts/route";
 
 describe("POST /api/contacts — happy path (landing contact form)", () => {
-  it("returns 201 and saves the contact for valid input", async () => {
+  it("returns 201 for a valid Venezuelan number with +58 prefix", async () => {
     const req = new NextRequest("http://localhost/api/contacts", {
       method: "POST",
       body: JSON.stringify({
         name: "María García",
         email: "maria@example.com",
-        phone: "0412-1234567",
+        phone: "+584121234567",
       }),
       headers: { "Content-Type": "application/json" },
     });
@@ -34,5 +34,59 @@ describe("POST /api/contacts — happy path (landing contact form)", () => {
     expect(res.status).toBe(201);
     expect(body.success).toBe(true);
     expect(body.data.saved).toBe(true);
+  });
+
+  it("returns 201 for a Colombian number with +57 prefix", async () => {
+    const req = new NextRequest("http://localhost/api/contacts", {
+      method: "POST",
+      body: JSON.stringify({
+        name: "Juan Pérez",
+        email: "juan@example.com",
+        phone: "+573001234567",
+      }),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const res = await POST(req);
+    const body = await res.json();
+
+    expect(res.status).toBe(201);
+    expect(body.success).toBe(true);
+  });
+
+  it("returns 400 when phone has no country code", async () => {
+    const req = new NextRequest("http://localhost/api/contacts", {
+      method: "POST",
+      body: JSON.stringify({
+        name: "María García",
+        email: "maria@example.com",
+        phone: "04121234567",
+      }),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const res = await POST(req);
+    const body = await res.json();
+
+    expect(res.status).toBe(400);
+    expect(body.success).toBe(false);
+  });
+
+  it("returns 400 when phone is only the dial code with no local digits", async () => {
+    const req = new NextRequest("http://localhost/api/contacts", {
+      method: "POST",
+      body: JSON.stringify({
+        name: "María García",
+        email: "maria@example.com",
+        phone: "+58",
+      }),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const res = await POST(req);
+    const body = await res.json();
+
+    expect(res.status).toBe(400);
+    expect(body.success).toBe(false);
   });
 });

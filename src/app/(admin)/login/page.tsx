@@ -35,6 +35,7 @@ export default function LoginPage() {
         router.push("/dashboard");
       } else {
         setError(json.error ?? "Credenciales incorrectas");
+        setLoading(false)
       }
     } catch {
       setError("Error de conexión. Intenta de nuevo.");

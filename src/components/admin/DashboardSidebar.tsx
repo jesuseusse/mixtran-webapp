@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: "/dashboard/calendar/bookings",  label: "Reservas"   },
   { href: "/dashboard/contacts",           label: "Contactos"  },
   { href: "/dashboard/reviews",            label: "Reseñas"    },
+  { href: "/dashboard/landing",            label: "Landing"    },
 ] as const;
 
 /**

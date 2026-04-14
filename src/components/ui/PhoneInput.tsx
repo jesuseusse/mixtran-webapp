@@ -158,7 +158,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
               aria-hidden="true"
             >
               {activeEntry.flag}
-              <span className="font-medium">{activeCode}</span>
+              {/*Do not show +58 since it is repetitive <span className="font-medium">{activeCode}</span> */}
               {/* Chevron */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -186,7 +186,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
             >
               {LATAM_CODES.map((entry) => (
                 <option key={entry.code} value={entry.code}>
-                  {entry.flag} {entry.name} ({entry.code})
+                  {entry.flag} {entry.name} {entry.code}
                 </option>
               ))}
             </select>

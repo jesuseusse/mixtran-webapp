@@ -11,7 +11,7 @@
 Paint brand marketing and operations platform built entirely on AWS.
 Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · AWS Amplify + DynamoDB + Cognito + SES + S3
 
-**Current phase:** Phase 3 — CRM + Reviews  
+**Current phase:** Phase 4 — Landing Editor  
 **Update this line** when moving to the next phase.
 
 ---
@@ -159,8 +159,8 @@ In Phase 1 content is hardcoded as props — component signatures must already a
 |---|---|---|
 | 1 | Landing page (SSG + ISR, SEO, all UI primitives) | ✅ Complete |
 | 2 | Booking system (Cognito, calendar, SES emails) | ✅ Complete |
-| 3 | CRM + Reviews (contacts auto-upsert, moderation) | 🔄 In progress |
-| 4 | Landing editor (DynamoDB config, S3 media, revalidation) | ⏳ Pending |
+| 3 | CRM + Reviews (contacts auto-upsert, moderation) | ✅ Complete |
+| 4 | Landing editor (DynamoDB config, S3 media, revalidation) | 🔄 In progress |
 
 **Update status column** as phases complete.
 
@@ -251,6 +251,25 @@ Complete these in order. Check each one when done.
 - [x] Landing page wired to `reviewService.getApprovedReviews()` (ISR)
 - [x] `yarn build` passes with zero TypeScript errors
 - [ ] End-to-end test: submit review → admin approves → appears on landing
+
+---
+
+## Phase 4 checklist
+
+- [x] `src/lib/types/LandingSection.ts` — LandingSection, SectionId, UpdateLandingSectionInput
+- [x] `src/lib/aws/s3.ts` — S3Client singleton
+- [x] `src/lib/repositories/landingRepository.ts` — findAll, findById, upsert
+- [x] `src/lib/services/landingService.ts` — getSections, getSection, updateSection + revalidatePath('/')
+- [x] `src/app/api/landing/route.ts` (GET public — all sections)
+- [x] `src/app/api/landing/[sectionId]/route.ts` (GET public + PATCH admin)
+- [x] `src/app/api/media/upload/route.ts` — S3 presigned PUT URL (admin only)
+- [x] `src/app/(admin)/dashboard/landing/page.tsx` — accordion section editor
+- [x] `src/components/admin/SectionEditor.tsx` — per-section edit form
+- [x] Landing page wired to `landingService.getSections()` (replaces hardcoded constants)
+- [x] `yarn build` passes with zero TypeScript errors (27 routes)
+- [ ] Create `paint-landing-config` DynamoDB table (PK: `sectionId`, type: String)
+- [ ] Set `NEXT_S3_BUCKET` and `NEXT_S3_CLOUDFRONT_URL` env vars in Amplify Console
+- [ ] End-to-end test: edit a section in admin → appears on landing within seconds
 
 ---
 

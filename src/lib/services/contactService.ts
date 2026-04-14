@@ -1,4 +1,5 @@
 import * as contactRepository from "@/lib/repositories/contactRepository";
+import * as emailService from "@/lib/services/emailService";
 import type { Contact, UpsertContactInput } from "@/lib/types/Contact";
 
 /**
@@ -23,9 +24,15 @@ export async function getContact(email: string): Promise<Contact> {
  * Upserts a contact from the public landing page contact form.
  * Creates the record if it doesn't exist; updates name and phone on subsequent submissions.
  * Does not increment totalBookings — that is reserved for booking-originated upserts.
+ * Sends an admin notification email fire-and-forget (email failure never blocks the save).
  */
 export async function upsertFromLanding(input: UpsertContactInput): Promise<void> {
   await contactRepository.upsert(input);
+
+  /* Fire-and-forget — do not let email failure block the contact save. */
+  void emailService.sendContactNotification(input).catch((err) =>
+    console.error("contactService.upsertFromLanding: email notification failed", err)
+  );
 }
 
 /**

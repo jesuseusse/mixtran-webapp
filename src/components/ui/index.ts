@@ -48,3 +48,6 @@ export type { WhatsappContactProps } from "./WhatsappContact";
 
 export { PhoneInput } from "./PhoneInput";
 export type { PhoneInputProps } from "./PhoneInput";
+
+export { ImageUploader } from "./ImageUploader";
+export type { ImageUploaderProps } from "./ImageUploader";

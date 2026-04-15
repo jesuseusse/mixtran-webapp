@@ -2,12 +2,13 @@ import { revalidatePath } from "next/cache";
 import * as landingRepository from "@/lib/repositories/landingRepository";
 import type {
   LandingSection,
+  ResolvedSection,
   SectionId,
   UpdateLandingSectionInput,
 } from "@/lib/types/LandingSection";
 
 /**
- * Hardcoded defaults for every section.
+ * Hardcoded content defaults for every section.
  * Used when DynamoDB has no entry for a section yet (empty table on first deploy).
  * Phase 4 admin editor writes to DynamoDB; the landing page always has content.
  */
@@ -74,19 +75,28 @@ const DEFAULTS: Record<SectionId, Record<string, unknown>> = {
   },
 };
 
+/** Default render order — index in this array = order value. */
+const DEFAULT_ORDER: SectionId[] = [
+  "hero",
+  "about",
+  "products",
+  "gallery",
+  "reviews",
+  "booking_cta",
+  "contact",
+];
+
 /**
  * Merges DynamoDB content over hardcoded defaults, skipping empty-string values.
- * This ensures fields left blank in the editor fall back to the default rather
- * than overwriting it with an empty string.
- * e.g. backgroundImageUrl="" → uses "/images/hero-bg.png" from DEFAULTS.
+ * Empty strings are treated as "not set" so the default is preserved.
+ * Note: boolean `false` and number `0` are valid values and DO override defaults.
  */
-function mergeWithDefaults(
+function mergeContent(
   defaults: Record<string, unknown>,
   stored: Record<string, unknown>
 ): Record<string, unknown> {
   const merged = { ...defaults };
   for (const [key, value] of Object.entries(stored)) {
-    /* Only override the default when the stored value is non-empty. */
     if (value !== "" && value !== null && value !== undefined) {
       merged[key] = value;
     }
@@ -95,61 +105,76 @@ function mergeWithDefaults(
 }
 
 /**
- * Returns all landing sections, merging DynamoDB content with hardcoded defaults.
- * Sections not yet saved in DynamoDB fall back to DEFAULTS — the landing page
- * always renders correctly even on a fresh deployment.
+ * Returns all landing sections merged with defaults, keyed by sectionId.
+ * Each value includes content, enabled flag, and order for the landing page renderer.
  */
-export async function getSections(): Promise<Record<SectionId, Record<string, unknown>>> {
+export async function getSections(): Promise<Record<SectionId, ResolvedSection>> {
   const dbSections = await landingRepository.findAll();
-  const result = { ...DEFAULTS };
+  const dbMap = new Map(dbSections.map((s) => [s.sectionId, s]));
 
-  for (const section of dbSections) {
-    result[section.sectionId] = mergeWithDefaults(
-      DEFAULTS[section.sectionId],
-      section.content
-    );
+  const result = {} as Record<SectionId, ResolvedSection>;
+  for (const sectionId of DEFAULT_ORDER) {
+    const db = dbMap.get(sectionId);
+    result[sectionId] = {
+      content: db ? mergeContent(DEFAULTS[sectionId], db.content) : { ...DEFAULTS[sectionId] },
+      enabled: db?.enabled ?? true,
+      order: db?.order ?? DEFAULT_ORDER.indexOf(sectionId),
+    };
   }
-
   return result;
 }
 
 /**
- * Returns a single section merged with its hardcoded default.
+ * Returns a single section's content merged with defaults.
+ * Used by the public GET /api/landing/[sectionId] endpoint.
  */
 export async function getSection(sectionId: SectionId): Promise<Record<string, unknown>> {
   const dbSection = await landingRepository.findById(sectionId);
   if (!dbSection) return { ...DEFAULTS[sectionId] };
-  return mergeWithDefaults(DEFAULTS[sectionId], dbSection.content);
+  return mergeContent(DEFAULTS[sectionId], dbSection.content);
 }
 
 /**
- * Returns the raw DynamoDB records for all sections (admin view).
- * Sections not in DynamoDB are represented with their default content.
+ * Returns all sections for the admin editor, including metadata (enabled, order, updatedAt).
+ * Sections missing from DynamoDB are populated with defaults and enabled=true.
+ * Sorted by current order value ascending.
  */
 export async function getAllSectionsForAdmin(): Promise<LandingSection[]> {
   const dbSections = await landingRepository.findAll();
   const dbMap = new Map(dbSections.map((s) => [s.sectionId, s]));
 
-  const allSectionIds = Object.keys(DEFAULTS) as SectionId[];
-  return allSectionIds.map((sectionId) => ({
-    sectionId,
-    content: dbMap.has(sectionId)
-      ? mergeWithDefaults(DEFAULTS[sectionId], dbMap.get(sectionId)!.content)
-      : { ...DEFAULTS[sectionId] },
-    updatedAt: dbMap.get(sectionId)?.updatedAt ?? "",
-  }));
+  const sections: LandingSection[] = DEFAULT_ORDER.map((sectionId) => {
+    const db = dbMap.get(sectionId);
+    return {
+      sectionId,
+      content: db ? mergeContent(DEFAULTS[sectionId], db.content) : { ...DEFAULTS[sectionId] },
+      enabled: db?.enabled ?? true,
+      order: db?.order ?? DEFAULT_ORDER.indexOf(sectionId),
+      updatedAt: db?.updatedAt ?? "",
+    };
+  });
+
+  return sections.sort((a, b) => a.order - b.order);
 }
 
 /**
- * Saves updated content for a landing section and triggers ISR revalidation.
- * The landing page reflects changes within seconds without a full rebuild.
+ * Saves updated fields for a landing section and triggers ISR revalidation.
+ * Accepts partial updates: content, enabled, and/or order can be patched independently.
  */
 export async function updateSection(input: UpdateLandingSectionInput): Promise<void> {
+  /* Read current state so we can merge partial updates. */
+  const existing = await landingRepository.findById(input.sectionId);
+
   const section: LandingSection = {
     sectionId: input.sectionId,
-    content: input.content,
+    content: input.content !== undefined
+      ? input.content
+      : (existing?.content ?? DEFAULTS[input.sectionId]),
+    enabled: input.enabled !== undefined ? input.enabled : (existing?.enabled ?? true),
+    order: input.order !== undefined ? input.order : (existing?.order ?? DEFAULT_ORDER.indexOf(input.sectionId)),
     updatedAt: new Date().toISOString(),
   };
+
   await landingRepository.upsert(section);
   revalidatePath("/");
 }

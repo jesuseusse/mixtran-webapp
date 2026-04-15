@@ -60,14 +60,28 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       return NextResponse.json(errorResponse("Sección inválida"), { status: 400 });
     }
 
-    const body = (await request.json()) as { content?: Record<string, unknown> };
-    if (!body.content || typeof body.content !== "object") {
-      return NextResponse.json(errorResponse("El campo content es requerido"), { status: 400 });
+    const body = (await request.json()) as {
+      content?: Record<string, unknown>;
+      enabled?: boolean;
+      order?: number;
+    };
+
+    if (
+      body.content === undefined &&
+      body.enabled === undefined &&
+      body.order === undefined
+    ) {
+      return NextResponse.json(
+        errorResponse("Se requiere al menos uno de: content, enabled, order"),
+        { status: 400 }
+      );
     }
 
     await landingService.updateSection({
       sectionId: sectionId as SectionId,
-      content: body.content,
+      ...(body.content !== undefined && { content: body.content }),
+      ...(body.enabled !== undefined && { enabled: body.enabled }),
+      ...(body.order !== undefined && { order: body.order }),
     });
 
     return NextResponse.json(successResponse({ updated: true }));

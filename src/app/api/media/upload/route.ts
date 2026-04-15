@@ -52,12 +52,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const bucket = process.env.NEXT_S3_BUCKET!;
-    const cdnBase = process.env.NEXT_S3_CLOUDFRONT_URL!;
+    const bucket = process.env.NEXT_S3_BUCKET_NAME;
+    const cdnBase = process.env.NEXT_S3_CLOUDFRONT_URL;
+    const region = process.env.NEXT_AWS_REGION ?? "us-east-1";
+
+    console.info("[media/upload] env check —", {
+      NEXT_S3_BUCKET_NAME: bucket ?? "MISSING",
+      NEXT_S3_CLOUDFRONT_URL: cdnBase ?? "MISSING",
+      NEXT_AWS_REGION: region,
+      fileName: body.fileName,
+      contentType: body.contentType,
+    });
+
+    if (!bucket) {
+      console.error("[media/upload] NEXT_S3_BUCKET_NAME is not set");
+      return NextResponse.json(errorResponse("Configuración de S3 incompleta (bucket)"), { status: 500 });
+    }
+    if (!cdnBase) {
+      console.error("[media/upload] NEXT_S3_CLOUDFRONT_URL is not set");
+      return NextResponse.json(errorResponse("Configuración de S3 incompleta (CDN URL)"), { status: 500 });
+    }
 
     /* Generate a unique key so uploads never overwrite existing files. */
     const ext = body.fileName.split(".").pop() ?? "jpg";
     const key = `media/${randomUUID()}.${ext}`;
+
+    console.info(`[media/upload] generating presigned URL — bucket=${bucket} key=${key}`);
 
     const command = new PutObjectCommand({
       Bucket: bucket,
@@ -70,10 +90,12 @@ export async function POST(request: NextRequest) {
     });
 
     const publicUrl = `${cdnBase}/${key}`;
+    console.info(`[media/upload] presigned URL generated — publicUrl=${publicUrl}`);
 
     return NextResponse.json(successResponse({ uploadUrl, publicUrl }));
   } catch (err) {
-    console.error("POST /api/media/upload error:", err);
+    const e = err as Error;
+    console.error("[media/upload] FAILED —", e?.name, e?.message, e);
     return NextResponse.json(errorResponse("Error al generar la URL de carga"), { status: 500 });
   }
 }

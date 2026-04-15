@@ -990,7 +990,7 @@ Each phase is a **shippable deliverable** that can go live independently.
 > Paste this block at the start of every Claude Code session.
 
 ```
-You are working on a Next.js 15 + AWS platform for a paint brand.
+You are working on a Next.js 16 + AWS platform for a paint brand.
 The full plan is in docs/DEVELOPMENT_PLAN.md. Read it before writing any code.
 
 Current phase: [PHASE NUMBER AND NAME]

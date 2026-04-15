@@ -22,9 +22,11 @@
     "@aws-sdk/s3-request-presigner": "^3.1030.0",
     "aws-jwt-verify": "^5.1.1",
     "babel-plugin-react-compiler": "^1.0.0",
+    "browser-image-compression": "^2.0.2",
     "next": "16.2.2",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "react-easy-crop": "^5.5.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

@@ -8,6 +8,17 @@ const nextConfig: NextConfig = {
 
   /** React Compiler — stable in Next.js 16.2. Optimises re-renders automatically. */
   reactCompiler: true,
+
+  /** Allow next/image to load media from the CloudFront CDN. */
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "d3uobzicsr778z.cloudfront.net",
+        pathname: "/**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

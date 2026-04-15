@@ -1,3 +1,4 @@
+import React from "react";
 import type { Metadata } from "next";
 import { buildMetadata, buildLocalBusinessJsonLd, buildProductListJsonLd } from "@/lib/utils/seo";
 import { HeroSection } from "@/components/landing/HeroSection";
@@ -50,7 +51,7 @@ export function generateMetadata(): Metadata {
  * - landingService.updateSection()
  */
 export default async function LandingPage() {
-  /* Load all section content and approved reviews in parallel. */
+  /* Load all section data and approved reviews in parallel. */
   const [sections, approvedReviews] = await Promise.all([
     landingService.getSections().catch(() => null),
     reviewService
@@ -67,16 +68,25 @@ export default async function LandingPage() {
       .catch(() => [] as ReviewItem[]),
   ]);
 
-  /* Cast each section's content to the expected prop shape.
-     landingService guarantees defaults are present so all fields exist.
-     Double-cast through unknown: Record<string,unknown> → unknown → PropType. */
-  const hero         = (sections?.hero         ?? {}) as unknown as Parameters<typeof HeroSection>[0];
-  const about        = (sections?.about        ?? {}) as unknown as Parameters<typeof AboutSection>[0];
-  const products     = (sections?.products     ?? {}) as unknown as Parameters<typeof ProductsSection>[0];
-  const gallery      = (sections?.gallery      ?? {}) as unknown as Parameters<typeof GallerySection>[0];
-  const reviewsHeading = (sections?.reviews    ?? {}) as unknown as { heading: string; subtitle: string };
-  const bookingCta   = (sections?.booking_cta  ?? {}) as unknown as Parameters<typeof BookingCtaSection>[0];
-  const contact      = (sections?.contact      ?? {}) as unknown as Parameters<typeof ContactSection>[0];
+  /* Helper to extract content for a section — falls back to empty object. */
+  function c(id: keyof NonNullable<typeof sections>) {
+    return (sections?.[id]?.content ?? {});
+  }
+
+  /* Determine which sections are enabled and in what order. */
+  function isEnabled(id: keyof NonNullable<typeof sections>) {
+    return sections?.[id]?.enabled ?? true;
+  }
+
+  const hero          = c("hero")        as unknown as Parameters<typeof HeroSection>[0];
+  const about         = c("about")       as unknown as Parameters<typeof AboutSection>[0];
+  const products      = c("products")    as unknown as Parameters<typeof ProductsSection>[0];
+  const gallery       = c("gallery")     as unknown as Parameters<typeof GallerySection>[0];
+  const reviewsHeading= c("reviews")     as unknown as { heading: string; subtitle: string };
+  const bookingCta    = c("booking_cta") as unknown as Parameters<typeof BookingCtaSection>[0];
+  const contact       = c("contact")     as unknown as Parameters<typeof ContactSection>[0];
+
+  const galleryItems = (c("gallery") as { items?: unknown[] }).items ?? [];
 
   /** Structured data for Google Knowledge Panel and local search results. */
   const localBusinessJsonLd = buildLocalBusinessJsonLd({
@@ -97,7 +107,19 @@ export default async function LandingPage() {
     )
   );
 
-  const galleryItems = (gallery as { items?: unknown[] }).items ?? [];
+  /* Build ordered list of section renderers — sorted by `order`, skipping disabled. */
+  type SectionEntry = { id: string; order: number; node: React.ReactNode };
+  const sectionNodes: SectionEntry[] = [
+    { id: "hero",        order: sections?.hero?.order        ?? 0, node: isEnabled("hero")        ? <HeroSection {...hero} /> : null },
+    { id: "about",       order: sections?.about?.order       ?? 1, node: isEnabled("about")       ? <AboutSection {...about} /> : null },
+    { id: "products",    order: sections?.products?.order    ?? 2, node: isEnabled("products")    ? <ProductsSection {...products} /> : null },
+    { id: "gallery",     order: sections?.gallery?.order     ?? 3, node: isEnabled("gallery") && galleryItems.length > 0 ? <GallerySection {...gallery} /> : null },
+    { id: "reviews",     order: sections?.reviews?.order     ?? 4, node: isEnabled("reviews")     ? <ReviewsSection {...reviewsHeading} reviews={approvedReviews} /> : null },
+    { id: "booking_cta", order: sections?.booking_cta?.order ?? 5, node: isEnabled("booking_cta") ? <BookingCtaSection {...bookingCta} /> : null },
+    { id: "contact",     order: sections?.contact?.order     ?? 6, node: isEnabled("contact")     ? <ContactSection {...contact} /> : null },
+  ]
+    .sort((a, b) => a.order - b.order)
+    .filter((s) => s.node !== null);
 
   return (
     <>
@@ -112,13 +134,9 @@ export default async function LandingPage() {
       />
 
       <main>
-        <HeroSection {...hero} />
-        <AboutSection {...about} />
-        <ProductsSection {...products} />
-        {galleryItems.length > 0 && <GallerySection {...gallery} />}
-        <ReviewsSection {...reviewsHeading} reviews={approvedReviews} />
-        <BookingCtaSection {...bookingCta} />
-        <ContactSection {...contact} />
+        {sectionNodes.map((s) => (
+          <React.Fragment key={s.id}>{s.node}</React.Fragment>
+        ))}
       </main>
     </>
   );

@@ -120,7 +120,7 @@ All server-side env vars use the `NEXT_` prefix. Only truly public values use `N
 | Cognito | `NEXT_COGNITO_*` | Admin auth (JWT → httpOnly cookie) |
 | DynamoDB | `NEXT_DYNAMODB_TABLE_*` | All data tables |
 | SES | `NEXT_SES_*` | Transactional email |
-| S3 | `NEXT_S3_*` | Media storage |
+| S3 | `NEXT_S3_BUCKET_NAME`, `NEXT_S3_CLOUDFRONT_URL` | Media storage |
 | CloudFront | `NEXT_S3_CLOUDFRONT_URL` | Media CDN |
 
 ---
@@ -263,9 +263,13 @@ Complete these in order. Check each one when done.
 - [x] `src/app/api/landing/route.ts` (GET public — all sections)
 - [x] `src/app/api/landing/[sectionId]/route.ts` (GET public + PATCH admin)
 - [x] `src/app/api/media/upload/route.ts` — S3 presigned PUT URL (admin only)
-- [x] `src/app/(admin)/dashboard/landing/page.tsx` — accordion section editor
-- [x] `src/components/admin/SectionEditor.tsx` — per-section edit form
-- [x] Landing page wired to `landingService.getSections()` (replaces hardcoded constants)
+- [x] `src/app/(admin)/dashboard/landing/page.tsx` — accordion editor with enabled toggle per section
+- [x] `src/components/admin/SectionEditor.tsx` — per-section text/textarea edit form
+- [x] `src/components/admin/GalleryEditor.tsx` — S3 presigned upload + delete for gallery images
+- [x] `LandingSection` type extended with `enabled` and `order` fields
+- [x] `landingService.getSections()` returns `ResolvedSection` with enabled/order metadata
+- [x] `landingService.updateSection()` accepts partial patches (content, enabled, order)
+- [x] Landing page respects `enabled` flag and `order` — hidden sections skipped, order sorted
 - [x] `yarn build` passes with zero TypeScript errors (27 routes)
 - [ ] Create `paint-landing-config` DynamoDB table (PK: `sectionId`, type: String)
 - [ ] Set `NEXT_S3_BUCKET` and `NEXT_S3_CLOUDFRONT_URL` env vars in Amplify Console

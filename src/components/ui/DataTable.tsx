@@ -2,9 +2,6 @@
 
 import React from "react";
 
-/** Responsive breakpoint below which a column is hidden. */
-export type HideBelow = "sm" | "md" | "lg";
-
 /**
  * Column definition for DataTable.
  * @template T - the row data type.
@@ -12,16 +9,21 @@ export type HideBelow = "sm" | "md" | "lg";
 export interface ColumnDef<T> {
   /** Unique column key — used as React `key` prop. */
   key: string;
-  /** Column header label (shown in thead). */
+  /** Column header label. */
   header: string;
   /**
-   * Hides the column at viewports narrower than this breakpoint.
-   * Undefined = always visible.
+   * Small-screen grid behaviour: when set to 2 the cell spans both columns.
+   * Has no effect on large screens (flex row).
    */
-  hideBelow?: HideBelow;
+  span?: 2;
+  /**
+   * On large screens, pushes this cell to the far right of the flex row.
+   * Use for action columns.
+   */
+  align?: "right";
   /** Returns the cell content for a given row. */
   render: (row: T) => React.ReactNode;
-  /** Extra className applied to both `<th>` and `<td>` for this column. */
+  /** Extra className applied to the cell wrapper `<div>` in both layouts. */
   className?: string;
 }
 
@@ -40,25 +42,23 @@ export interface DataTableProps<T> {
   onRowClick?: (row: T) => void;
   /** Message shown when `rows` is empty. */
   emptyMessage?: string;
-  /** Extra className applied to the outer wrapper `<div>`. */
+  /** Extra className applied to the outermost wrapper. */
   className?: string;
 }
 
-/**
- * Full class strings kept as literals so Tailwind v4 scanner picks them up.
- * Maps a hideBelow value to the Tailwind visibility classes.
- */
-const HIDE_BELOW_CLS: Record<HideBelow, string> = {
-  sm: "hidden sm:table-cell",
-  md: "hidden md:table-cell",
-  lg: "hidden lg:table-cell",
-};
+const ROW_INTERACTIVE = "cursor-pointer transition-colors hover:bg-background/60";
 
 /**
- * Responsive data table primitive.
+ * Dual-layout data list.
  *
- * Columns with `hideBelow` are hidden at smaller breakpoints to prevent
- * horizontal overflow. The table always fills its container width.
+ * - **Large screens (lg+):** horizontal flex row inside a bordered container,
+ *   with a sticky header row. Columns with `align: "right"` are pushed to the
+ *   far right with `ml-auto`.
+ *
+ * - **Small/medium (<lg):** each row is a card with a 2-column grid.
+ *   Columns with `span: 2` span the full width. Each cell shows its header
+ *   as a small label above the value.
+ *
  * Stateless — contains zero business logic.
  */
 export function DataTable<T>({
@@ -78,58 +78,96 @@ export function DataTable<T>({
   }
 
   return (
-    <div
-      className={`w-full overflow-hidden rounded-lg border border-border bg-surface shadow-card ${className}`}
-    >
-      <table className="w-full divide-y divide-border text-sm">
-        <thead className="bg-background">
-          <tr>
-            {columns.map((col) => (
-              <th
-                key={col.key}
-                className={[
-                  "px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-text-muted",
-                  col.hideBelow ? HIDE_BELOW_CLS[col.hideBelow] : "",
-                  col.className ?? "",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-              >
-                {col.header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border">
+    <div className={className}>
+      {/* ── Large screen: flex table ───────────────────────────────────── */}
+      <div className="hidden overflow-hidden rounded-lg border border-border bg-surface shadow-card lg:block">
+        {/* Header row */}
+        <div className="flex items-center gap-4 border-b border-border bg-background px-4 py-3">
+          {columns.map((col) => (
+            <div
+              key={col.key}
+              className={[
+                "min-w-0 text-xs font-semibold uppercase tracking-wide text-text-muted",
+                col.align === "right" ? "ml-auto flex-none" : "flex-1",
+                col.className ?? "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+            >
+              {col.header}
+            </div>
+          ))}
+        </div>
+
+        {/* Data rows */}
+        <ul className="divide-y divide-border">
           {rows.map((row) => (
-            <tr
+            <li
               key={getRowKey(row)}
               onClick={onRowClick ? () => onRowClick(row) : undefined}
               className={[
-                "transition-colors hover:bg-background/50",
-                onRowClick ? "cursor-pointer" : "",
+                "flex items-center gap-4 px-4 py-3",
+                onRowClick ? ROW_INTERACTIVE : "",
               ]
                 .filter(Boolean)
                 .join(" ")}
             >
               {columns.map((col) => (
-                <td
+                <div
                   key={col.key}
                   className={[
-                    "px-4 py-3 text-text-secondary",
-                    col.hideBelow ? HIDE_BELOW_CLS[col.hideBelow] : "",
+                    "min-w-0 text-sm text-text-secondary",
+                    col.align === "right" ? "ml-auto flex-none" : "flex-1",
                     col.className ?? "",
                   ]
                     .filter(Boolean)
                     .join(" ")}
                 >
                   {col.render(row)}
-                </td>
+                </div>
               ))}
-            </tr>
+            </li>
           ))}
-        </tbody>
-      </table>
+        </ul>
+      </div>
+
+      {/* ── Small / medium: card grid ──────────────────────────────────── */}
+      <ul className="space-y-3 lg:hidden">
+        {rows.map((row) => (
+          <li
+            key={getRowKey(row)}
+            onClick={onRowClick ? () => onRowClick(row) : undefined}
+            className={[
+              "grid grid-cols-2 gap-x-8 gap-y-4 rounded-lg border border-border bg-surface p-4 shadow-card",
+              onRowClick ? ROW_INTERACTIVE : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
+            {columns.map((col) => (
+              <div
+                key={col.key}
+                className={[
+                  col.span === 2 ? "col-span-2" : "",
+                  col.className ?? "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-text-muted">
+                  {col.header}
+                </p>
+                <div className="mt-1 text-sm text-text-secondary">
+                  {col.render(row)}
+                </div>
+              </div>
+            ))}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
+
+/** @deprecated No longer used — DataTable hides/shows layouts via responsive classes. */
+export type HideBelow = "sm" | "md" | "lg";

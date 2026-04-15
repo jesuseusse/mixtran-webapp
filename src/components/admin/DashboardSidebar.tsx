@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Spinner } from "@/components/ui/Spinner";
 
@@ -26,6 +26,13 @@ export function DashboardSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [loggingOut, setLoggingOut] = useState(false);
+  /** Href of the nav item the user just clicked — cleared once pathname updates. */
+  const [navigatingTo, setNavigatingTo] = useState<string | null>(null);
+
+  /* Clear the loading indicator once Next.js completes the navigation. */
+  useEffect(() => {
+    setNavigatingTo(null);
+  }, [pathname]);
 
   /**
    * Determines whether a nav item should be marked active.
@@ -111,21 +118,28 @@ export function DashboardSidebar() {
         <nav className="flex-1 py-4">
           {NAV_ITEMS.map(({ href, label }) => {
             const active = isActive(href);
+            const loading = navigatingTo === href;
             return (
-              <a
+              <button
                 key={href}
-                href={href}
-                onClick={() => setOpen(false)}
+                type="button"
+                onClick={() => {
+                  if (active) return;
+                  setNavigatingTo(href);
+                  setOpen(false);
+                  router.push(href);
+                }}
                 aria-current={active ? "page" : undefined}
                 className={[
-                  "flex items-center gap-2 px-6 py-2.5 text-sm font-medium transition-colors",
+                  "flex w-full items-center justify-between px-6 py-2.5 text-sm font-medium transition-colors",
                   active
                     ? "border-l-2 border-primary bg-primary/5 text-primary"
                     : "border-l-2 border-transparent text-text-secondary hover:bg-background hover:text-text-primary",
                 ].join(" ")}
               >
                 {label}
-              </a>
+                {loading && <Spinner size="sm" />}
+              </button>
             );
           })}
         </nav>

@@ -1,8 +1,17 @@
 import { SESv2Client, SendEmailCommand } from "@aws-sdk/client-sesv2";
 
+const credentials =
+  process.env.NEXT_AWS_ACCESS_KEY_ID && process.env.NEXT_AWS_SECRET_ACCESS_KEY
+    ? {
+        accessKeyId: process.env.NEXT_AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.NEXT_AWS_SECRET_ACCESS_KEY,
+      }
+    : undefined;
+
 /** Shared SESv2 client singleton. */
 const client = new SESv2Client({
   region: process.env.NEXT_AWS_REGION ?? "us-east-1",
+  ...(credentials && { credentials }),
 });
 
 /** Parameters required to send a transactional email. */

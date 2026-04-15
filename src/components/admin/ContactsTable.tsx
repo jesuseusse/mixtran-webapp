@@ -33,6 +33,7 @@ export function ContactsTable({ contacts }: ContactsTableProps) {
     {
       key: "name",
       header: "Nombre",
+      span: 2,
       render: (c) => (
         <span className="font-medium text-text-primary">
           {c.name}
@@ -45,11 +46,11 @@ export function ContactsTable({ contacts }: ContactsTableProps) {
     {
       key: "email",
       header: "Email",
-      hideBelow: "sm",
+      span: 2,
       render: (c) => (
         <a
           href={`mailto:${c.email}`}
-          className="text-primary hover:underline"
+          className="break-all text-primary hover:underline"
           onClick={(e) => e.stopPropagation()}
         >
           {c.email}
@@ -59,7 +60,6 @@ export function ContactsTable({ contacts }: ContactsTableProps) {
     {
       key: "phone",
       header: "Teléfono",
-      hideBelow: "md",
       render: (c) => <WhatsappContact phone={c.phone} />,
     },
     {
@@ -72,13 +72,11 @@ export function ContactsTable({ contacts }: ContactsTableProps) {
     {
       key: "lastBookingAt",
       header: "Última reserva",
-      hideBelow: "md",
       render: (c) => (c.lastBookingAt ? formatDate(c.lastBookingAt) : "—"),
     },
     {
       key: "createdAt",
       header: "Registrado",
-      hideBelow: "lg",
       render: (c) => formatDate(c.createdAt),
     },
   ];

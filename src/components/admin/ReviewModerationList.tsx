@@ -62,6 +62,7 @@ export function ReviewModerationList({ reviews: initialReviews }: ReviewModerati
     {
       key: "author",
       header: "Autor",
+      span: 2,
       render: (r) => (
         <div>
           <p className="font-medium text-text-primary">{r.authorName}</p>
@@ -77,30 +78,27 @@ export function ReviewModerationList({ reviews: initialReviews }: ReviewModerati
       render: (r) => <Rating value={r.rating} size="sm" />,
     },
     {
-      key: "body",
-      header: "Reseña",
-      hideBelow: "md",
-      className: "max-w-xs",
-      render: (r) => (
-        <p className="line-clamp-2 text-xs text-text-secondary">{r.body}</p>
-      ),
-    },
-    {
-      key: "phone",
-      header: "Teléfono",
-      hideBelow: "lg",
-      render: (r) => r.phone ?? "—",
-    },
-    {
       key: "createdAt",
       header: "Fecha",
-      hideBelow: "sm",
       render: (r) =>
         new Date(r.createdAt).toLocaleDateString("es-VE", {
           day: "numeric",
           month: "short",
           year: "numeric",
         }),
+    },
+    {
+      key: "body",
+      header: "Reseña",
+      span: 2,
+      render: (r) => (
+        <p className="text-xs text-text-secondary">{r.body}</p>
+      ),
+    },
+    {
+      key: "phone",
+      header: "Teléfono",
+      render: (r) => r.phone ?? "—",
     },
     {
       key: "status",
@@ -110,6 +108,8 @@ export function ReviewModerationList({ reviews: initialReviews }: ReviewModerati
     {
       key: "actions",
       header: "Acciones",
+      span: 2,
+      align: "right",
       render: (r) => (
         <div className="space-y-1">
           <div className="flex flex-wrap gap-1">

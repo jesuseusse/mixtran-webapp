@@ -67,21 +67,22 @@ export function BookingTable({ bookings: initialBookings }: BookingTableProps) {
     {
       key: "time",
       header: "Horario",
-      hideBelow: "sm",
       render: (b) => `${b.startTime} – ${b.endTime}`,
     },
     {
       key: "name",
       header: "Cliente",
-      render: (b) => b.name ?? "—",
+      span: 2,
+      render: (b) => (
+        <span className="font-medium text-text-primary">{b.name ?? "—"}</span>
+      ),
     },
     {
       key: "email",
       header: "Email",
-      hideBelow: "md",
       render: (b) =>
         b.contactEmail ? (
-          <a href={`mailto:${b.contactEmail}`} className="text-primary hover:underline">
+          <a href={`mailto:${b.contactEmail}`} className="break-all text-primary hover:underline">
             {b.contactEmail}
           </a>
         ) : (
@@ -91,18 +92,18 @@ export function BookingTable({ bookings: initialBookings }: BookingTableProps) {
     {
       key: "phone",
       header: "Teléfono",
-      hideBelow: "lg",
       render: (b) => b.phone ? <WhatsappContact phone={b.phone} /> : "—",
     },
     {
       key: "status",
       header: "Estado",
+      span: 2,
       render: (b) => <StatusBadge status={b.status} />,
     },
     {
       key: "meetLink",
       header: "Enlace reunión",
-      hideBelow: "md",
+      span: 2,
       render: (b) =>
         b.status === "pending" ? (
           <input
@@ -113,7 +114,7 @@ export function BookingTable({ bookings: initialBookings }: BookingTableProps) {
             onChange={(e) =>
               setMeetLinkInputs((prev) => ({ ...prev, [b.slotId]: e.target.value }))
             }
-            className="w-48 rounded-md border border-border bg-background px-2 py-1 text-xs text-text-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            className="w-full rounded-md border border-border bg-background px-2 py-1 text-xs text-text-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
         ) : b.meetLink ? (
           <a
@@ -132,6 +133,8 @@ export function BookingTable({ bookings: initialBookings }: BookingTableProps) {
     {
       key: "actions",
       header: "Acciones",
+      span: 2,
+      align: "right",
       render: (b) =>
         b.status === "pending" ? (
           <div className="flex gap-2">

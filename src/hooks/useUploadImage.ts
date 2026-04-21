@@ -32,14 +32,18 @@ export interface UseUploadImageReturn {
  * Custom hook for uploading an image to S3 via the presigned PUT URL flow.
  *
  * Flow:
- *   1. POST /api/media/upload → { uploadUrl, publicUrl }
+ *   1. POST {endpoint} → { uploadUrl, publicUrl }
  *   2. PUT file directly to S3 using uploadUrl
  *   3. Returns the CloudFront publicUrl
  *
  * No external upload library is used — the presigned URL approach means
  * the file bytes never pass through the Next.js server.
+ *
+ * @param endpoint - API route that returns { uploadUrl, publicUrl }.
+ *   Defaults to /api/media/upload (admin, auth-gated).
+ *   Pass /api/reviews/upload for the public review photo flow.
  */
-export function useUploadImage(): UseUploadImageReturn {
+export function useUploadImage(endpoint = "/api/media/upload"): UseUploadImageReturn {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,7 +53,7 @@ export function useUploadImage(): UseUploadImageReturn {
 
     try {
       /* Step 1 — get presigned URL from our API. */
-      const presignRes = await fetch("/api/media/upload", {
+      const presignRes = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -88,7 +92,7 @@ export function useUploadImage(): UseUploadImageReturn {
     } finally {
       setUploading(false);
     }
-  }, []);
+  }, [endpoint]);
 
   const clearError = useCallback(() => setError(null), []);
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Rating } from "@/components/ui/Rating";
 import { Spinner } from "@/components/ui/Spinner";
+import { Modal } from "@/components/ui/Modal";
 import type { Review } from "@/lib/types/Review";
 
 /** Props for ReviewModerationCard. */
@@ -21,6 +22,7 @@ export interface ReviewModerationCardProps {
 export function ReviewModerationCard({ review, onStatusChange }: ReviewModerationCardProps) {
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
+  const [photoOpen, setPhotoOpen] = useState(false);
 
   async function handleAction(action: "approved" | "rejected" | "delete") {
     setProcessing(true);
@@ -74,6 +76,23 @@ export function ReviewModerationCard({ review, onStatusChange }: ReviewModeratio
         &ldquo;{review.body}&rdquo;
       </blockquote>
 
+      {/* Photo thumbnail */}
+      {review.photoUrl && (
+        <button
+          type="button"
+          onClick={() => setPhotoOpen(true)}
+          className="block overflow-hidden rounded-md border border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          aria-label="Ver imagen completa"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={review.photoUrl}
+            alt="Foto adjunta a la reseña"
+            className="h-20 w-20 object-cover transition-opacity hover:opacity-80"
+          />
+        </button>
+      )}
+
       {/* Date */}
       <p className="text-xs text-text-muted">
         {new Date(review.createdAt).toLocaleDateString("es-VE", {
@@ -113,6 +132,22 @@ export function ReviewModerationCard({ review, onStatusChange }: ReviewModeratio
           Eliminar
         </ActionButton>
       </div>
+
+      {/* Full-size photo modal */}
+      {review.photoUrl && (
+        <Modal
+          title="Foto de la reseña"
+          isOpen={photoOpen}
+          onClose={() => setPhotoOpen(false)}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={review.photoUrl}
+            alt="Foto adjunta a la reseña"
+            className="w-full rounded-md object-contain"
+          />
+        </Modal>
+      )}
     </div>
   );
 }

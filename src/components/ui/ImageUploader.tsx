@@ -37,6 +37,12 @@ export interface ImageUploaderProps {
   compress?: Parameters<typeof imageCompression>[1];
   /** Label shown in the drop-zone. @default "Subir imagen" */
   label?: string;
+  /**
+   * API endpoint used to obtain the presigned S3 PUT URL.
+   * Defaults to /api/media/upload (admin, auth-gated).
+   * Pass /api/reviews/upload for the public review photo flow.
+   */
+  uploadEndpoint?: string;
   /** Additional Tailwind classes applied to the root element. */
   className?: string;
 }
@@ -73,6 +79,7 @@ export function ImageUploader({
   initialUrl,
   aspectRatio,
   compress,
+  uploadEndpoint,
   label = "Subir imagen",
   className = "",
 }: ImageUploaderProps) {
@@ -91,7 +98,7 @@ export function ImageUploader({
   const [processing, setProcessing] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
 
-  const { upload, uploading, error: uploadError } = useUploadImage();
+  const { upload, uploading, error: uploadError } = useUploadImage(uploadEndpoint);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const error = localError ?? uploadError;

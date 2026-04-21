@@ -55,6 +55,7 @@ export async function submitReview(input: CreateReviewInput): Promise<Review> {
     rating: input.rating,
     ...(input.email ? { contactEmail: input.email } : {}),
     ...(input.phone ? { phone: input.phone.trim() } : {}),
+    ...(input.photoUrl ? { photoUrl: input.photoUrl.trim() } : {}),
   };
 
   await reviewRepository.create(review);

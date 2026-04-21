@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { DataTable, type ColumnDef } from "@/components/ui/DataTable";
+import { Modal } from "@/components/ui/Modal";
 import { Rating } from "@/components/ui/Rating";
 import { Spinner } from "@/components/ui/Spinner";
 import type { Review } from "@/lib/types/Review";
@@ -23,6 +24,7 @@ export function ReviewModerationList({ reviews: initialReviews }: ReviewModerati
   const [reviews, setReviews] = useState<Review[]>(initialReviews);
   const [processing, setProcessing] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [photoModal, setPhotoModal] = useState<string | null>(null);
 
   async function handleAction(
     reviewId: string,
@@ -96,9 +98,26 @@ export function ReviewModerationList({ reviews: initialReviews }: ReviewModerati
       ),
     },
     {
-      key: "phone",
-      header: "Teléfono",
-      render: (r) => r.phone ?? "—",
+      key: "photo",
+      header: "Foto",
+      render: (r) =>
+        r.photoUrl ? (
+          <button
+            type="button"
+            onClick={() => setPhotoModal(r.photoUrl!)}
+            className="block overflow-hidden rounded-md border border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            aria-label="Ver imagen completa"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={r.photoUrl}
+              alt="Foto de la reseña"
+              className="h-12 w-12 object-cover transition-opacity hover:opacity-75"
+            />
+          </button>
+        ) : (
+          <span className="text-xs text-text-muted">—</span>
+        ),
     },
     {
       key: "status",
@@ -149,12 +168,29 @@ export function ReviewModerationList({ reviews: initialReviews }: ReviewModerati
   ];
 
   return (
-    <DataTable
-      columns={columns}
-      rows={reviews}
-      getRowKey={(r) => r.reviewId}
-      emptyMessage="No hay reseñas registradas."
-    />
+    <>
+      <DataTable
+        columns={columns}
+        rows={reviews}
+        getRowKey={(r) => r.reviewId}
+        emptyMessage="No hay reseñas registradas."
+      />
+
+      <Modal
+        title="Foto de la reseña"
+        isOpen={!!photoModal}
+        onClose={() => setPhotoModal(null)}
+      >
+        {photoModal && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={photoModal}
+            alt="Foto adjunta a la reseña"
+            className="w-full rounded-md object-contain"
+          />
+        )}
+      </Modal>
+    </>
   );
 }
 

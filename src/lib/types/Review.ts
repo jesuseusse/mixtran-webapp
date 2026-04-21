@@ -30,6 +30,8 @@ export interface Review {
   rating: number;
   /** Review body text. */
   body: string;
+  /** Optional CloudFront URL of a photo submitted with the review. */
+  photoUrl?: string;
 }
 
 /**
@@ -43,4 +45,6 @@ export interface CreateReviewInput {
   phone?: string;
   rating: number;
   body: string;
+  /** Optional CloudFront URL of a photo submitted with the review. */
+  photoUrl?: string;
 }

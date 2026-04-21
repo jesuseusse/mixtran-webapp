@@ -16,4 +16,5 @@ Object.assign(process.env, {
   NEXT_SES_ADMIN_EMAIL: "admin@test.com",
   NEXT_S3_BUCKET_NAME: "test-bucket",
   NEXT_S3_CLOUDFRONT_URL: "https://cdn.test.com",
+  NEXT_DYNAMODB_TABLE_REVIEW_TOKENS: "paint-review-tokens",
 });

@@ -1,5 +1,6 @@
 import * as reviewService from "@/lib/services/reviewService";
 import { ReviewModerationList } from "@/components/admin/ReviewModerationList";
+import { CreateReviewLinkButton } from "@/components/admin/CreateReviewLinkButton";
 import type { Review } from "@/lib/types/Review";
 
 /**
@@ -20,12 +21,15 @@ export default async function ReviewsPage() {
 
   return (
     <div className="space-y-10">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center gap-4">
         <h1 className="font-heading text-3xl font-bold text-text-primary">Reseñas</h1>
-        <div className="flex gap-3 text-sm">
-          <Pill label="Pendientes" count={pending.length} cls="bg-warning/10 text-warning" />
-          <Pill label="Aprobadas"  count={approved.length} cls="bg-success/10 text-success" />
-          <Pill label="Rechazadas" count={rejected.length} cls="bg-danger/10 text-danger" />
+        <div className="flex flex-1 flex-wrap items-center justify-between gap-3">
+          <CreateReviewLinkButton />
+          <div className="flex gap-3 text-sm">
+            <Pill label="Pendientes" count={pending.length} cls="bg-warning/10 text-warning" />
+            <Pill label="Aprobadas"  count={approved.length} cls="bg-success/10 text-success" />
+            <Pill label="Rechazadas" count={rejected.length} cls="bg-danger/10 text-danger" />
+          </div>
         </div>
       </div>
 

@@ -63,6 +63,7 @@ export default async function LandingPage() {
           rating: r.rating,
           body: r.body,
           createdAt: r.createdAt,
+          ...(r.photoUrl ? { photoUrl: r.photoUrl } : {}),
         }))
       )
       .catch(() => [] as ReviewItem[]),

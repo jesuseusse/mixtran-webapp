@@ -11,7 +11,7 @@
 Paint brand marketing and operations platform built entirely on AWS.
 Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · AWS Amplify + DynamoDB + Cognito + SES + S3
 
-**Current phase:** Phase 4 — Landing Editor  
+**Current phase:** Phase 5 — TBD  
 **Update this line** when moving to the next phase.
 
 ---
@@ -127,12 +127,15 @@ All server-side env vars use the `NEXT_` prefix. Only truly public values use `N
 
 ## DynamoDB tables
 
-| Table | Env var | PK |
-|---|---|---|
-| `paint-slots` | `NEXT_DYNAMODB_TABLE_SLOTS` | `slotId` |
-| `paint-contacts` | `NEXT_DYNAMODB_TABLE_CONTACTS` | `email` |
-| `paint-reviews` | `NEXT_DYNAMODB_TABLE_REVIEWS` | `reviewId` |
-| `paint-landing-config` | `NEXT_DYNAMODB_TABLE_LANDING` | `sectionId` |
+| Table | Env var | PK | GSI |
+|---|---|---|---|
+| `paint-slots` | `NEXT_DYNAMODB_TABLE_SLOTS` | `slotId` | `date-startTime-index` (PK: `date`, SK: `startTime`) |
+| `paint-contacts` | `NEXT_DYNAMODB_TABLE_CONTACTS` | `email` | — |
+| `paint-reviews` | `NEXT_DYNAMODB_TABLE_REVIEWS` | `reviewId` | `status-createdAt-index` (PK: `status`, SK: `createdAt`) |
+| `paint-landing-config` | `NEXT_DYNAMODB_TABLE_LANDING` | `sectionId` | — |
+| `paint-review-tokens` | `NEXT_DYNAMODB_TABLE_REVIEW_TOKENS` | `token` | — |
+
+See `docs/aws-dynamodb-setup.md` for full creation commands.
 
 ---
 
@@ -160,7 +163,7 @@ In Phase 1 content is hardcoded as props — component signatures must already a
 | 1 | Landing page (SSG + ISR, SEO, all UI primitives) | ✅ Complete |
 | 2 | Booking system (Cognito, calendar, SES emails) | ✅ Complete |
 | 3 | CRM + Reviews (contacts auto-upsert, moderation) | ✅ Complete |
-| 4 | Landing editor (DynamoDB config, S3 media, revalidation) | 🔄 In progress |
+| 4 | Landing editor (DynamoDB config, S3 media, revalidation) | ✅ Complete |
 
 **Update status column** as phases complete.
 
@@ -271,9 +274,10 @@ Complete these in order. Check each one when done.
 - [x] `landingService.updateSection()` accepts partial patches (content, enabled, order)
 - [x] Landing page respects `enabled` flag and `order` — hidden sections skipped, order sorted
 - [x] `yarn build` passes with zero TypeScript errors (27 routes)
-- [ ] Create `paint-landing-config` DynamoDB table (PK: `sectionId`, type: String)
-- [ ] Set `NEXT_S3_BUCKET` and `NEXT_S3_CLOUDFRONT_URL` env vars in Amplify Console
-- [ ] End-to-end test: edit a section in admin → appears on landing within seconds
+- [x] Create `paint-landing-config` DynamoDB table (PK: `sectionId`, type: String)
+- [x] Set `NEXT_S3_BUCKET_NAME` and `NEXT_S3_CLOUDFRONT_URL` env vars in Amplify Console
+- [x] Set `NEXT_AWS_ACCESS_KEY_ID` and `NEXT_AWS_SECRET_ACCESS_KEY` for runtime credentials
+- [x] End-to-end test: edit a section in admin → appears on landing within seconds
 
 ---
 

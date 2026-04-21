@@ -29,7 +29,7 @@ export async function GET() {
  * Public — submits a new review from the /resenas page.
  * Always starts with status="pending". Admin must approve before it appears on the landing.
  *
- * Body: { authorName: string; email?: string; rating: number; body: string }
+ * Body: { authorName: string; email?: string; phone?: string; rating: number; body: string; photoUrl?: string }
  */
 export async function POST(request: NextRequest) {
   try {
@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
       phone?: string;
       rating?: number;
       body?: string;
+      photoUrl?: string;
     };
 
     if (!body.authorName || !body.rating || !body.body) {
@@ -61,6 +62,7 @@ export async function POST(request: NextRequest) {
       phone: body.phone,
       rating: body.rating,
       body: body.body,
+      photoUrl: body.photoUrl,
     });
 
     return NextResponse.json(successResponse(review), { status: 201 });

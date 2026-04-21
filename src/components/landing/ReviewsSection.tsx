@@ -13,6 +13,8 @@ export interface ReviewItem {
   body: string;
   /** ISO 8601 date the review was submitted. */
   createdAt: string;
+  /** Optional CloudFront URL of a photo submitted with the review. */
+  photoUrl?: string;
 }
 
 /** Props accepted by ReviewsSection. Matches the Phase 4 DynamoDB content shape. */
@@ -80,6 +82,14 @@ export function ReviewsSection({
                   <blockquote className="mb-4 text-sm leading-relaxed text-text-secondary">
                     &ldquo;{review.body}&rdquo;
                   </blockquote>
+                  {review.photoUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={review.photoUrl}
+                      alt={`Foto del resultado — ${review.authorName}`}
+                      className="mb-4 h-40 w-full rounded-md object-cover"
+                    />
+                  )}
                   <footer>
                     <cite className="not-italic text-sm font-semibold text-text-primary">
                       {review.authorName}

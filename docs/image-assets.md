@@ -33,7 +33,7 @@ La landing no renderizará correctamente sin ellas.
 ## Imágenes futuras — Galería (Phase 4)
 
 Estas imágenes se subirán a S3 desde el panel de administración en Phase 4.
-No van en `public/images/` — se sirven vía CloudFront.
+No van en `public/images/` — se sirven vía CDN.
 
 | # | Nombre sugerido en S3 | Sección | Descripción |
 |---|---|---|---|
@@ -57,5 +57,5 @@ No van en `public/images/` — se sirven vía CloudFront.
 
 - El componente `<Image>` de Next.js optimiza automáticamente formato, tamaño y compresión al servir.
 - No uses nombres con espacios ni acentos — usa guiones (`-`) como separadores.
-- Las imágenes en `public/images/` se sirven estáticas desde la CDN de Amplify/CloudFront.
+- Las imágenes en `public/images/` se sirven estáticas desde la CDN del proveedor de hosting.
 - La imagen `og-default.jpg` va directo en `public/` (no en `public/images/`) porque `seo.ts` la referencia como `${BASE_URL}/og-default.jpg`.

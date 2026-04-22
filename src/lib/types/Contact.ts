@@ -33,4 +33,6 @@ export interface UpsertContactInput {
   email: string;
   name: string;
   phone: string;
+  /** Optional message from the landing page contact form. */
+  message?: string;
 }

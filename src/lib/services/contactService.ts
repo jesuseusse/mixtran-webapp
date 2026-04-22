@@ -27,7 +27,7 @@ export async function getContact(email: string): Promise<Contact> {
  * Sends an admin notification email fire-and-forget (email failure never blocks the save).
  */
 export async function upsertFromLanding(input: UpsertContactInput): Promise<void> {
-  await contactRepository.upsert(input);
+  await contactRepository.upsertFromContact(input);
 
   /* Fire-and-forget — do not let email failure block the contact save. */
   void emailService.sendContactNotification(input).catch((err) =>

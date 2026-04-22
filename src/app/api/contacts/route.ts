@@ -63,6 +63,7 @@ export async function POST(request: NextRequest) {
       name: body.name,
       email: body.email,
       phone: body.phone,
+      ...(body.message ? { message: body.message } : {}),
     });
 
     return NextResponse.json(successResponse({ saved: true }), { status: 201 });

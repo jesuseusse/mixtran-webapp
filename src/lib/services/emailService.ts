@@ -56,6 +56,10 @@ export async function sendContactNotification(input: UpsertContactInput): Promis
               <td style="padding: 8px; background: #F2F2F2; font-weight: bold;">Teléfono</td>
               <td style="padding: 8px;">${input.phone}</td>
             </tr>
+            ${input.message ? `<tr>
+              <td style="padding: 8px; background: #F2F2F2; font-weight: bold;">Mensaje</td>
+              <td style="padding: 8px;">${input.message}</td>
+            </tr>` : ""}
           </table>
           <p>Accede al panel de administración para ver el contacto.</p>
         </div>

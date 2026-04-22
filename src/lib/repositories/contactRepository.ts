@@ -35,9 +35,7 @@ export async function create(contact: Contact): Promise<void> {
 /**
  * Creates the contact if it does not exist, or increments totalBookings and
  * updates lastBookingAt if it does. Name and phone are only written on creation.
- *
- * This is a conditional put + update pattern: first we try to create, then update.
- * Safe to call concurrently — DynamoDB UpdateCommand with ADD is atomic.
+ * Call this from booking flows only.
  */
 export async function upsert(input: UpsertContactInput): Promise<void> {
   const now = new Date().toISOString();
@@ -46,7 +44,6 @@ export async function upsert(input: UpsertContactInput): Promise<void> {
     new UpdateCommand({
       TableName: TABLE,
       Key: { email: input.email },
-      /* On first insert: set all fields. On subsequent bookings: only bump totalBookings and lastBookingAt. */
       UpdateExpression:
         "SET #name = if_not_exists(#name, :name), phone = if_not_exists(phone, :phone), " +
         "totalBookings = if_not_exists(totalBookings, :zero) + :one, " +
@@ -59,6 +56,33 @@ export async function upsert(input: UpsertContactInput): Promise<void> {
         ":phone": input.phone,
         ":zero": 0,
         ":one": 1,
+        ":now": now,
+      },
+    })
+  );
+}
+
+/**
+ * Creates the contact if it does not exist, or updates name and phone if it does.
+ * Does NOT touch totalBookings or lastBookingAt — use this from contact form flows only.
+ */
+export async function upsertFromContact(input: UpsertContactInput): Promise<void> {
+  const now = new Date().toISOString();
+
+  await docClient.send(
+    new UpdateCommand({
+      TableName: TABLE,
+      Key: { email: input.email },
+      UpdateExpression:
+        "SET #name = :name, phone = :phone, " +
+        "totalBookings = if_not_exists(totalBookings, :zero), " +
+        "updatedAt = :now, " +
+        "createdAt = if_not_exists(createdAt, :now)",
+      ExpressionAttributeNames: { "#name": "name" },
+      ExpressionAttributeValues: {
+        ":name": input.name,
+        ":phone": input.phone,
+        ":zero": 0,
         ":now": now,
       },
     })

@@ -12,8 +12,8 @@ import * as reviewService from "@/lib/services/reviewService";
 import * as landingService from "@/lib/services/landingService";
 import type { ReviewItem } from "@/components/landing/ReviewsSection";
 
-/** ISR revalidation interval — 1 hour. Phase 4 calls revalidatePath('/') on content change. */
-export const revalidate = 3600;
+/** ISR revalidation interval — 5 minutes. Changes in the admin editor are visible within this window. */
+export const revalidate = 300;
 
 /**
  * Generates full page metadata including Open Graph, Twitter cards, canonical URL,

@@ -101,7 +101,7 @@ export default function LandingEditorPage() {
         Editor de landing
       </h1>
       <p className="mb-8 text-sm text-text-muted">
-        Los cambios se publican en la página principal en segundos (ISR).
+        Los cambios se guardan de inmediato y serán visibles en la página principal en un máximo de 5 minutos.
         Activa o desactiva secciones con el toggle.
       </p>
 

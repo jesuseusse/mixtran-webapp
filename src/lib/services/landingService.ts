@@ -176,5 +176,6 @@ export async function updateSection(input: UpdateLandingSectionInput): Promise<v
   };
 
   await landingRepository.upsert(section);
-  revalidatePath("/");
+  revalidatePath("/", "page");
+  revalidatePath("/", "layout");
 }

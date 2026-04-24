@@ -22,7 +22,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   return (
     <div className="flex min-h-screen flex-col bg-background lg:flex-row">
       <DashboardSidebar />
-      <main className="flex-1 overflow-auto p-6 lg:p-8">{children}</main>
+      <main className="flex-1 overflow-auto p-6 lg:ml-56 lg:p-8">{children}</main>
     </div>
   );
 }

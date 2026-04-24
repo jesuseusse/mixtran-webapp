@@ -100,11 +100,11 @@ export function DashboardSidebar() {
       {/* ── Sidebar panel ──────────────────────────────────────────── */}
       <aside
         className={[
-          /* Desktop: always visible, static in flow */
-          "lg:relative lg:flex lg:w-56 lg:shrink-0 lg:translate-x-0 lg:flex-col lg:border-r lg:border-border lg:bg-surface",
-          /* Mobile: fixed drawer that slides in/out */
-          "fixed inset-y-0 left-0 z-30 flex w-64 flex-col border-r border-border bg-surface",
+          /* Fixed on all breakpoints — never scrolls with page content. */
+          "fixed inset-y-0 left-0 z-30 flex h-screen w-64 flex-col border-r border-border bg-surface",
           "transition-transform duration-200 ease-in-out",
+          /* Desktop: always visible, narrower width, lower z so modals can overlap. */
+          "lg:z-10 lg:w-56",
           open ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         ].join(" ")}
       >
@@ -115,7 +115,7 @@ export function DashboardSidebar() {
         </div>
 
         {/* Nav links */}
-        <nav className="flex-1 py-4">
+        <nav className="flex-1 overflow-y-auto py-4">
           {NAV_ITEMS.map(({ href, label }) => {
             const active = isActive(href);
             const loading = navigatingTo === href;

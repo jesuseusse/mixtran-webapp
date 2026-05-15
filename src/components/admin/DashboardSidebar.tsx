@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { href: "/dashboard/contacts",           label: "Contactos"  },
   { href: "/dashboard/reviews",            label: "Reseñas"    },
   { href: "/dashboard/landing",            label: "Landing"    },
+  { href: "/dashboard/quotes",             label: "Cotizaciones" },
 ] as const;
 
 /**

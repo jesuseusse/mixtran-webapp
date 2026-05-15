@@ -9,9 +9,9 @@
 ## Project
 
 Paint brand marketing and operations platform built entirely on AWS.
-Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · AWS Amplify + DynamoDB + Cognito + SES + S3
+Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · AWS Amplify + DynamoDB + Cognito + SES + S3
 
-**Current phase:** Phase 5 — TBD  
+**Current phase:** Phase 5 — Quote System  
 **Update this line** when moving to the next phase.
 
 ---
@@ -134,6 +134,9 @@ All server-side env vars use the `NEXT_` prefix. Only truly public values use `N
 | `paint-reviews` | `NEXT_DYNAMODB_TABLE_REVIEWS` | `reviewId` | `status-createdAt-index` (PK: `status`, SK: `createdAt`) |
 | `paint-landing-config` | `NEXT_DYNAMODB_TABLE_LANDING` | `sectionId` | — |
 | `paint-review-tokens` | `NEXT_DYNAMODB_TABLE_REVIEW_TOKENS` | `token` | — |
+| `paint-quote-config` | `NEXT_DYNAMODB_TABLE_QUOTE_CONFIG` | `configId` | — (single item, PK always "main") |
+| `paint-quote-catalog` | `NEXT_DYNAMODB_TABLE_QUOTE_CATALOG` | `productId` | — |
+| `paint-quotes` | `NEXT_DYNAMODB_TABLE_QUOTES` | `quoteId` | `status-createdAt-index` (PK: `status`, SK: `createdAt`) |
 
 See `docs/aws-dynamodb-setup.md` for full creation commands.
 
@@ -164,6 +167,7 @@ In Phase 1 content is hardcoded as props — component signatures must already a
 | 2 | Booking system (Cognito, calendar, SES emails) | ✅ Complete |
 | 3 | CRM + Reviews (contacts auto-upsert, moderation) | ✅ Complete |
 | 4 | Landing editor (DynamoDB config, S3 media, revalidation) | ✅ Complete |
+| 5 | Quote system (PDF, catalog, wizard, config) | 🚧 In Progress |
 
 **Update status column** as phases complete.
 
@@ -339,3 +343,70 @@ yarn typecheck       # tsc --noEmit
 # Deploy (handled by Amplify on git push to main)
 git push origin main
 ```
+
+---
+
+## Phase 5 checklist
+
+### A — Foundation
+- [x] Create 3 DynamoDB tables: `paint-quote-config`, `paint-quote-catalog`, `paint-quotes`
+- [ ] Add env vars to Amplify Console: `NEXT_DYNAMODB_TABLE_QUOTE_CONFIG`, `NEXT_DYNAMODB_TABLE_QUOTE_CATALOG`, `NEXT_DYNAMODB_TABLE_QUOTES`
+- [x] `yarn add @react-pdf/renderer uuid` + `yarn add -D @types/uuid`
+- [x] `src/lib/types/QuoteConfig.ts` + `CURRENCY_OPTIONS` constant
+- [x] `src/lib/types/QuoteCatalogItem.ts`
+- [x] `src/lib/types/Quote.ts`
+
+### B — Repository layer
+- [x] `src/lib/repositories/quoteConfigRepository.ts`
+- [x] `src/lib/repositories/quoteCatalogRepository.ts`
+- [x] `src/lib/repositories/quoteRepository.ts`
+
+### C — Service layer
+- [x] `src/lib/services/quoteConfigService.ts`
+- [x] `src/lib/services/quoteCatalogService.ts`
+- [x] `src/lib/services/quoteService.ts`
+- [x] `src/lib/pdf/QuoteDocument.tsx`
+- [x] `src/lib/services/quotePdfService.ts`
+
+### D — API Routes
+- [x] `src/app/api/quotes/config/route.ts`
+- [x] `src/app/api/quotes/config/logo/route.ts`
+- [x] `src/app/api/quotes/catalog/route.ts`
+- [x] `src/app/api/quotes/catalog/[productId]/route.ts`
+- [x] `src/app/api/quotes/route.ts`
+- [x] `src/app/api/quotes/[quoteId]/route.ts`
+- [x] `src/app/api/quotes/[quoteId]/status/route.ts`
+- [x] `src/app/api/quotes/[quoteId]/pdf/route.ts`
+
+### E — UI Components
+- [x] `src/components/admin/quotes/QuoteStatusBadge.tsx`
+- [x] `src/components/admin/quotes/QuoteFilterBar.tsx`
+- [x] `src/components/admin/quotes/QuoteCard.tsx`
+- [x] `src/components/admin/quotes/QuoteList.tsx`
+- [x] `src/components/admin/quotes/ProductAutocomplete.tsx`
+- [x] `src/components/admin/quotes/QuoteItemEditor.tsx`
+- [x] `src/components/admin/quotes/QuoteWizard.tsx`
+- [x] `src/components/admin/quotes/QuoteConfigForm.tsx`
+- [x] `src/components/admin/quotes/QuoteCatalogManager.tsx`
+- [x] `src/components/admin/quotes/QuoteDetailActions.tsx`
+
+### F — Dashboard Pages
+- [x] `src/app/(admin)/dashboard/quotes/page.tsx`
+- [x] `src/app/(admin)/dashboard/quotes/new/page.tsx`
+- [x] `src/app/(admin)/dashboard/quotes/[quoteId]/page.tsx`
+- [x] `src/app/(admin)/dashboard/quotes/settings/page.tsx`
+- [x] "Cotizaciones" link added to `DashboardSidebar.tsx`
+
+### G — Tests + Build
+- [x] `tests/smoke/quote-config.test.ts`
+- [x] `tests/smoke/quote-catalog.test.ts`
+- [x] `tests/smoke/quote-create.test.ts`
+- [x] `tests/smoke/quote-status.test.ts`
+- [x] `tests/smoke/quote-pdf.test.ts`
+- [x] `yarn build` passes with zero TypeScript errors (35 routes)
+- [x] All 35 smoke tests pass
+
+### H — Pending (AWS)
+- [ ] Create the 3 DynamoDB tables in AWS console (see table definitions in PHASE_5.md)
+- [ ] Set env vars in Amplify Console
+- [ ] End-to-end: create config → create quote → change status to sent → generate PDF → download

@@ -4,6 +4,10 @@ import type { QuoteConfig, UpdateQuoteConfigInput } from "@/lib/types/QuoteConfi
 
 const TABLE = process.env.NEXT_DYNAMODB_TABLE_QUOTE_CONFIG!;
 
+if (!TABLE) {
+  console.error("[quoteConfigRepository] NEXT_DYNAMODB_TABLE_QUOTE_CONFIG is not set — all DynamoDB calls will fail");
+}
+
 /**
  * Fetches the single config item (PK = "main").
  * Returns null if the config has never been saved.

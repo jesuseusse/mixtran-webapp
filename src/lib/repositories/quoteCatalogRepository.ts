@@ -13,6 +13,10 @@ import type {
 
 const TABLE = process.env.NEXT_DYNAMODB_TABLE_QUOTE_CATALOG!;
 
+if (!TABLE) {
+  console.error("[quoteCatalogRepository] NEXT_DYNAMODB_TABLE_QUOTE_CATALOG is not set — all DynamoDB calls will fail");
+}
+
 /**
  * Returns all catalog items. Sorted by usageCount descending by the caller.
  * Catalog is expected to stay small — no pagination needed initially.

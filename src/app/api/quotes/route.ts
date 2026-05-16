@@ -15,6 +15,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(errorResponse("No autorizado"), { status: 401 });
   }
 
+  console.info("[GET /api/quotes] env check —", {
+    NEXT_DYNAMODB_TABLE_QUOTES: process.env.NEXT_DYNAMODB_TABLE_QUOTES ?? "MISSING",
+    NEXT_AWS_REGION: process.env.NEXT_AWS_REGION ?? "MISSING",
+    NEXT_AWS_ACCESS_KEY_ID: process.env.NEXT_AWS_ACCESS_KEY_ID ? "SET" : "MISSING",
+  });
+
   try {
     const { searchParams } = new URL(request.url);
     const filters: QuoteListFilters = {};
@@ -31,10 +37,13 @@ export async function GET(request: NextRequest) {
     const to = searchParams.get("to");
     if (to) filters.to = to;
 
+    console.info("[GET /api/quotes] filters —", filters);
     const quotes = await quoteService.getQuotes(filters);
+    console.info(`[GET /api/quotes] returned ${quotes.length} quotes`);
     return NextResponse.json(successResponse(quotes));
   } catch (err) {
-    console.error("GET /api/quotes error:", err);
+    const e = err as Error;
+    console.error("[GET /api/quotes] FAILED —", e?.name, e?.message, e);
     return NextResponse.json(errorResponse("Error al obtener las cotizaciones"), { status: 500 });
   }
 }

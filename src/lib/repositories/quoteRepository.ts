@@ -12,6 +12,10 @@ import type { Quote, QuoteListFilters, QuoteStatus, UpdateQuoteInput } from "@/l
 const TABLE = process.env.NEXT_DYNAMODB_TABLE_QUOTES!;
 const GSI = "status-createdAt-index";
 
+if (!TABLE) {
+  console.error("[quoteRepository] NEXT_DYNAMODB_TABLE_QUOTES is not set — all DynamoDB calls will fail");
+}
+
 /**
  * Returns quotes matching the provided filters.
  * Status filter uses the GSI; otherwise performs a full scan.
